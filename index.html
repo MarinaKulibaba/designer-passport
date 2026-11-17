@@ -1,0 +1,758 @@
+<title>Marina's Designer Passport</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500&family=Schibsted+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: a fixed 1440×900 desk stage scaled to fit; a 3D passport (two 315×450 pages) sits on it with loose objects around */
+:root{
+  /* colours = Figma "Passport" variables (Normal mode) + two room tones for the page around the desk */
+  --room:#17130f;--room-2:#221d17;--edge:#4a4238;--soft:#b9b2a6;
+  --paper:#f3ede2;--paper-edge:#e4dbcb;--stamp-paper:#fffdf8;--line:#cfc5b3;
+  --ink:#1e1e1e;--ink-soft:#6b645a;--ink-dark:#0e0d12;--stamp-blue:#1b44b4;
+  --uv:#c9b8ff;--uv-ink:#15122e;
+  /* spacing scale 4/8 */
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;
+  --f-hand:'Caveat','Bradley Hand','Segoe Print',cursive;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --f-sans:'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--room);color:var(--paper);font-family:var(--f-sans);overflow:hidden;box-sizing:border-box;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding-block:12px;box-sizing:border-box}
+.viewport{position:relative;width:100%;flex:1;min-height:0}
+.stage{position:absolute;left:50%;top:50%;width:1440px;height:900px;transform-origin:0 0;border-radius:18px;overflow:hidden;
+  background:#ece7df;box-shadow:0 40px 90px rgba(0,0,0,.55);user-select:none;-webkit-user-select:none;touch-action:none}
+.stage img,.stage video{position:absolute;display:block;max-width:none;-webkit-user-drag:none;pointer-events:none}
+.bg{left:0;top:0;width:1440px;height:900px}
+
+/* loose desk objects */
+.obj{position:absolute;cursor:grab;transition:filter .2s,transform .2s;touch-action:none}
+.obj img,.obj video{position:static;width:100%;height:100%}
+.obj video{object-fit:cover}
+.obj:hover{filter:drop-shadow(0 10px 12px rgba(40,25,10,.22))}
+.obj.drag{cursor:grabbing;transform:scale(1.045) rotate(-1deg);filter:drop-shadow(0 28px 26px rgba(40,25,10,.38))}
+.obj.drop{animation:settle .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes settle{0%{transform:scale(1.045)}55%{transform:scale(.985)}100%{transform:none}}
+.obj.homing{transition:left .75s cubic-bezier(.2,.8,.2,1),top .75s cubic-bezier(.2,.8,.2,1),filter .2s}
+.obj.thump{animation:thump .34s ease-in-out}
+@keyframes thump{0%{transform:scale(1.045)}45%{transform:translateY(16px) scale(.93)}100%{transform:none}}
+.stamp.ink{mix-blend-mode:multiply;cursor:default;pointer-events:none}
+.book.uv .stamp.ink{mix-blend-mode:normal}
+.hint.rubber{left:24px;top:632px;font-size:22px;transform:rotate(-6deg);opacity:1}
+.hint.rubber.on{opacity:1}
+
+/* passport */
+.scene3d{position:absolute;inset:0;perspective:2400px;perspective-origin:747px 390px;pointer-events:none;z-index:15}
+.bookwrap{position:absolute;inset:0;transform-origin:747px 383px;transform:scale(1.22);transform-style:preserve-3d;pointer-events:none}
+.book{position:absolute;left:747px;top:158px;width:315px;height:450px;transform-style:preserve-3d;pointer-events:auto;
+  transition:transform .75s cubic-bezier(.2,.8,.2,1)}
+.book.closed{transform:translate(-218px,-6px) rotate(-6deg) scale(1.06);cursor:pointer}
+.book.closed:hover{transform:translate(-218px,-16px) rotate(-7.5deg) scale(1.08)}
+.book:focus-visible{outline:3px solid var(--uv);outline-offset:8px}
+.side{position:absolute;top:0;width:315px;height:450px;filter:drop-shadow(0 20px 18px rgba(30,18,6,.22))}
+.side.L{left:-315px}.side.R{left:0}
+.face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face.Lp{border-radius:8px 0 0 8px}.face.Rp{border-radius:0 8px 8px 0}
+.face img.pg{left:0;top:0;width:100%;height:100%}
+.u{opacity:0}
+.shade{position:absolute;inset:0;pointer-events:none;opacity:0}
+.Rp .shade{background:linear-gradient(90deg,rgba(0,0,0,.4),rgba(0,0,0,.08) 35%,rgba(255,255,255,.14) 80%,rgba(0,0,0,.12))}
+.Lp .shade{background:linear-gradient(270deg,rgba(0,0,0,.4),rgba(0,0,0,.08) 35%,rgba(255,255,255,.14) 80%,rgba(0,0,0,.12))}
+.gutter{position:absolute;top:0;width:40px;height:100%;pointer-events:none}
+.Rp .gutter{left:0;background:linear-gradient(90deg,rgba(60,40,20,.16),transparent)}
+.Lp .gutter{right:0;background:linear-gradient(270deg,rgba(60,40,20,.16),transparent)}
+.leaf{position:absolute;top:0;width:315px;height:450px;transform-style:preserve-3d;pointer-events:none}
+.leaf.fwd{left:0;transform-origin:0 50%}
+.leaf.bwd{left:-315px;transform-origin:100% 50%}
+.leaf .face.back{transform:rotateY(180deg)}
+.cover{position:absolute;left:0;top:0;width:315px;height:450px;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.45,.05,.25,1)}
+.cover .front{border-radius:5px 10px 10px 5px;box-shadow:0 18px 26px rgba(30,18,6,.3)}
+.cover .front img{left:0;top:0;width:100%;height:100%;object-fit:cover}
+.cover .back{transform:rotateY(180deg)}
+.book.open .cover{transform:translateZ(1px) rotateY(-180deg)}
+.corner{position:absolute;bottom:0;width:70px;height:70px;cursor:pointer;z-index:3}
+.side.R .corner{right:0}.side.L .corner{left:0}
+.corner::after{content:"";position:absolute;bottom:0;width:0;height:0;transition:width .22s ease,height .22s ease}
+.side.R .corner::after{right:0;background:linear-gradient(315deg,transparent 50%,#e6ddcc 51%,#f7f2e9);box-shadow:-4px -4px 8px rgba(0,0,0,.14)}
+.side.L .corner::after{left:0;background:linear-gradient(45deg,transparent 50%,#e6ddcc 51%,#f7f2e9);box-shadow:4px -4px 8px rgba(0,0,0,.14)}
+.corner:hover::after{width:40px;height:40px}
+.hit{position:absolute;inset:0;cursor:pointer;z-index:1}
+.stamp{position:absolute;z-index:4;cursor:pointer;transition:transform .2s,filter .2s}
+.stamp img{left:0;top:0;width:100%;height:100%}
+.stamp:hover{transform:translateY(-3px) scale(1.06);filter:drop-shadow(0 6px 5px rgba(40,25,10,.28))}
+.stamp.press{animation:press .42s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes press{0%{opacity:0;transform:scale(1.7) translateY(-6px)}55%{opacity:1;transform:scale(.92)}100%{transform:none}}
+.stamp.wait{opacity:0}
+.tip{position:absolute;z-index:50;padding:6px 9px;border-radius:6px;background:var(--ink);color:var(--paper);font:500 11px/1.2 var(--f-mono);letter-spacing:.5px;pointer-events:none;white-space:nowrap;transform:translate(-50%,-125%)}
+.book.uv .n{opacity:0}
+.book.uv .u{opacity:1;animation:flicker .5s steps(1,end)}
+.face img,.stamp img{transition:opacity .25s}
+@keyframes flicker{0%{opacity:.2}12%{opacity:.85}22%{opacity:.1}38%{opacity:1}52%{opacity:.5}64%{opacity:1}}
+.nav{position:absolute;left:0;top:672px;width:1440px;display:flex;align-items:center;justify-content:center;gap:12px;z-index:30;pointer-events:none}
+.nav>*{pointer-events:auto}
+.nav button{height:34px;min-width:34px;border-radius:17px;border:1.5px solid rgba(30,30,30,.5);background:rgba(243,237,226,.96);color:var(--ink);
+  font:600 15px/1 var(--f-sans);cursor:pointer;display:grid;place-items:center;padding:0 10px;transition:transform .15s,background .15s}
+.nav button:hover:not(:disabled){transform:translateY(-1px);background:#fff}
+.nav button:disabled{opacity:.35;cursor:default}
+.nav button:focus-visible,.uvtoggle:focus-visible,.torch:focus-visible{outline:3px solid var(--uv);outline-offset:3px}
+.nav .closeb{font:500 11px/1 var(--f-mono);letter-spacing:1px;text-transform:uppercase;padding:0 14px}
+.count{font:500 12px/1 var(--f-mono);letter-spacing:1px;color:var(--ink);background:rgba(243,237,226,.96);padding:10px 12px;border-radius:17px;font-variant-numeric:tabular-nums}
+.hint{position:absolute;font-family:var(--f-hand);font-weight:700;color:var(--ink);pointer-events:none;transition:opacity .3s;white-space:nowrap;z-index:16}
+.hint.open{left:520px;top:688px;font-size:28px;transform:rotate(-2deg)}
+.hint.light{left:902px;top:790px;font-size:25px;transform:rotate(-4deg)}
+.torch{position:absolute;left:560px;top:732px;width:332px;height:183px;cursor:grab;touch-action:none;z-index:40;transform-origin:96% 34%;
+  filter:drop-shadow(0 12px 14px rgba(0,0,0,.3));transition:transform .25s}
+.torch img{position:static;width:100%;height:100%}
+.torch:hover{transform:rotate(-5deg) translateY(-6px)}
+.torch.drag{cursor:grabbing;transition:none;transform:rotate(-24deg)}
+.beam{position:absolute;width:320px;height:320px;margin:-160px 0 0 -160px;border-radius:50%;pointer-events:none;z-index:35;opacity:0;
+  background:radial-gradient(circle,rgba(201,184,255,.5) 0%,rgba(156,255,224,.18) 42%,transparent 70%);mix-blend-mode:screen;transition:opacity .2s}
+.beam.on{opacity:1}
+.bar{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:center;font:500 11px/1.4 var(--f-mono);letter-spacing:1px;color:var(--soft);text-transform:uppercase;text-align:center}
+.bar b{color:var(--paper);font-weight:500}
+.bar kbd{font:inherit;border:1px solid var(--edge);border-radius:4px;padding:1px 5px;color:var(--paper)}
+.uvtoggle{font:500 11px/1 var(--f-mono);letter-spacing:1px;text-transform:uppercase;color:var(--paper);background:transparent;border:1px solid var(--edge);border-radius:20px;padding:8px 13px;cursor:pointer}
+.uvtoggle[aria-pressed="true"]{background:var(--uv);color:var(--uv-ink);border-color:var(--uv)}
+.mobile{display:none}
+@media (max-width:760px),(max-width:1100px) and (orientation:portrait){
+  .stage{touch-action:pan-y}
+  .pnav,.tipbar{display:none!important}
+  body{overflow:auto}
+  .wrap{height:auto;min-height:100%;justify-content:flex-start}
+  .viewport{flex:none;aspect-ratio:1440/900;max-width:100%}
+  .mobile{display:flex;flex-direction:column;gap:10px;width:100%}
+  .m-spread{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;width:100%;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .m-spread::-webkit-scrollbar{display:none}
+  .m-page{position:relative;flex:0 0 100%;aspect-ratio:315/450;scroll-snap-align:center;border-radius:8px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.45)}
+  .m-page .face{width:315px;height:450px;transform-origin:0 0;inset:auto;left:0;top:0}
+  .m-spread.uv .n{opacity:0}.m-spread.uv .u{opacity:1}
+  .m-page .stamp{pointer-events:none}
+  .m-swipe{font:500 11px var(--f-mono);letter-spacing:1px;color:var(--soft);text-align:center}
+  .m-nav{display:flex;gap:10px}
+  .m-nav .btn{flex:1;min-height:44px;padding:0 var(--s2)}
+  .m-title{font:500 11px var(--f-mono);letter-spacing:1px;text-transform:uppercase;color:var(--soft)}
+}
+
+/* boarding pass barcode → resume */
+.scan{position:absolute;left:236px;top:44px;width:100px;height:68px;transform:rotate(-29deg);cursor:pointer;z-index:2;border-radius:4px;outline:none}
+.scan::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#ff3b30;box-shadow:0 0 8px 2px rgba(255,59,48,.7);opacity:0}
+.scan:hover::after,.scan:focus-visible::after{opacity:1;animation:laser .9s ease-in-out infinite alternate}
+.scan:focus-visible{box-shadow:0 0 0 3px var(--uv)}
+@keyframes laser{from{top:0}to{top:calc(100% - 2px)}}
+.cvpop{position:absolute;z-index:60;width:250px;padding:10px 10px 12px;background:var(--stamp-paper);border-radius:8px;box-shadow:0 26px 40px rgba(30,18,6,.35);pointer-events:none;
+  transform-origin:80% 0;animation:pop .22s cubic-bezier(.2,.9,.3,1.2)}
+.cvpop img{position:static;width:100%;height:auto;border:1px solid var(--paper-edge);border-radius:3px}
+.cvpop p{margin:8px 2px 0;font:500 11px/1.35 var(--f-mono);letter-spacing:.4px;color:var(--ink);text-transform:uppercase}
+.cvpop p span{color:var(--ink-soft);text-transform:none;letter-spacing:0;font-family:var(--f-sans);font-size:12px;display:block;margin-top:2px}
+@keyframes pop{from{opacity:0;transform:scale(.85) translateY(-6px)}to{opacity:1;transform:none}}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(15,12,9,.78);display:flex;flex-direction:column;align-items:center;gap:12px;overflow:auto;
+  padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.modal .bar2{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;width:min(1200px,100%)}
+#viewer .bar2{position:sticky;top:-16px;z-index:3;margin-top:-16px;padding:14px 0 10px;background:rgba(15,12,9,.96)}
+#viewer:not(.reading) .vnav{display:none}
+#viewer .pair{width:min(1200px,100%,calc((100vh - 110px) * 1.4))}
+.pnav .btn:disabled{opacity:1;color:rgba(30,30,30,.28)}
+.modal .bar2 span{flex:1;min-width:0;font:500 12px/1.3 var(--f-mono);letter-spacing:1px;text-transform:uppercase;color:var(--paper)}
+.modal a:focus-visible,.modal button:focus-visible{outline:3px solid var(--uv);outline-offset:2px}
+.modal img.big{width:auto;max-width:100%;max-height:none}
+.pair{display:flex;width:min(1500px,100%);box-shadow:0 30px 60px rgba(0,0,0,.5);border-radius:8px;overflow:hidden;flex:none}
+.modal .pair img{width:50%;height:auto;border-radius:0;box-shadow:none;animation:none}
+@media (max-width:760px){.pair{flex-direction:column}.modal .pair img{width:100%}}
+.contact{background:var(--paper);color:var(--ink);border-radius:12px;padding:22px;width:min(440px,100%);display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 60px rgba(0,0,0,.5);margin-top:8vh}
+.contact h2{margin:0;font:800 26px/1.1 var(--f-sans)}
+.contact .note{margin:0;padding:10px 12px;border:1px dashed var(--ink-soft);border-radius:8px;font:500 13px/1.4 var(--f-sans)}
+.sticky{position:absolute;left:44px;top:40px;min-width:196px;z-index:15;transform:rotate(-4deg);background:var(--stamp-paper);color:var(--ink);border:0;border-radius:3px;padding:14px 16px 13px;text-align:left;cursor:pointer;
+  box-shadow:0 3px 6px rgba(26,20,13,.18),0 14px 24px rgba(26,20,13,.12);transition:transform .2s,box-shadow .2s;font:inherit}
+.sticky:before{content:'';position:absolute;left:50%;top:-9px;width:64px;height:20px;margin-left:-32px;background:rgba(201,184,255,.55);transform:rotate(3deg)}
+.sticky:hover{transform:rotate(-2deg) translateY(-3px);box-shadow:0 6px 10px rgba(26,20,13,.2),0 20px 30px rgba(26,20,13,.14)}
+.sticky:focus-visible{outline:3px solid var(--stamp-blue);outline-offset:4px}
+.sticky .k{display:block;font:500 9px/1 var(--f-mono);letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+.sticky .h{display:block;font:700 27px/1 var(--f-hand);color:var(--stamp-blue);white-space:nowrap}
+.sticky .s{display:block;margin-top:6px;font:700 13px/1.25 var(--f-sans)}
+body.opened .sticky{opacity:0;pointer-events:none;transform:rotate(-4deg) translateY(-12px)}
+.obj[data-id="obj-12"] .objtag{right:auto;left:-6px}
+.obj[data-id="obj-6"] .objtag{bottom:auto;top:-28px;right:-64px}
+.ytframe{position:relative;width:100%;height:100%;box-sizing:border-box;padding:3px;background:#f3f5f9;outline:1.5px solid #6f93c4;outline-offset:-1px;box-shadow:0 10px 22px rgba(26,20,13,.22)}
+.ytframe video{display:block;width:100%;height:100%;object-fit:cover}
+.ytframe i{position:absolute;width:7px;height:7px;background:#fff;border:1.5px solid #3f6fb0;box-sizing:border-box}.ytframe i:nth-of-type(1){left:-3px;top:-3px}.ytframe i:nth-of-type(2){right:-3px;top:-3px}.ytframe i:nth-of-type(3){left:-3px;bottom:-3px}.ytframe i:nth-of-type(4){right:-3px;bottom:-3px}
+.objtag{position:absolute;right:-6px;bottom:-30px;display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border-radius:14px;background:var(--ink);color:var(--paper);font:500 10px/1 var(--f-mono);letter-spacing:.8px;text-decoration:none;white-space:nowrap;box-shadow:0 4px 8px rgba(26,20,13,.2)}
+.objtag:hover{background:#000}.objtag:focus-visible{outline:3px solid var(--uv);outline-offset:2px}
+.summary{width:min(680px,100%);max-height:calc(100vh - 40px);overflow:auto;margin-top:20px}
+.summary .lead{margin:0;font:500 15px/1.45 var(--f-sans)}
+.summary h3{margin:4px 0 0;font:500 10px/1 var(--f-mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-soft)}
+.proofs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.proof{background:var(--stamp-paper);border:1px solid var(--line);border-radius:10px;padding:12px 13px;display:flex;flex-direction:column;gap:6px}
+.proof b{font:800 15px/1.15 var(--f-sans)}.proof .m{font:500 9.5px/1.3 var(--f-mono);letter-spacing:.8px;text-transform:uppercase;color:var(--ink-soft)}
+.proof p{margin:0;font:500 12.5px/1.4 var(--f-sans)}.proof .big{color:var(--stamp-blue);font:800 22px/1 var(--f-sans)}
+.proof .links{display:flex;gap:12px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.proof .links a,.proof .links button{font:500 11px/1 var(--f-mono);letter-spacing:.6px;color:var(--stamp-blue);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.flowline{margin:0;font:500 12px/1.5 var(--f-mono);letter-spacing:.3px}
+@media (max-width:640px){.proofs{grid-template-columns:1fr}}
+.contact .role{margin:0;font:500 11px/1.3 var(--f-mono);letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)}
+.contact .row{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:10px}
+.contact .row b{font:500 10px/1 var(--f-mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-soft)}
+.contact .row span,.contact .row a{font:500 15px/1.35 var(--f-sans);color:var(--ink);word-break:break-all;user-select:all}
+.contact .row a{text-decoration:underline;text-underline-offset:3px;user-select:auto;padding:0;background:none;min-height:0;display:inline}
+.contact .acts{display:flex;gap:8px;flex-wrap:wrap}
+.contact .acts{gap:var(--s2)}
+.modal img{width:min(760px,100%);height:auto;border-radius:6px;box-shadow:0 30px 60px rgba(0,0,0,.5);animation:pop .25s ease}
+.cvlink{font:500 11px/1 var(--f-mono);letter-spacing:1px;text-transform:uppercase;color:var(--paper);background:transparent;border:1px solid var(--edge);border-radius:20px;padding:8px 13px;cursor:pointer}
+.cvlink:focus-visible{outline:2px solid var(--uv);outline-offset:3px}
+
+/* magnifier */
+.lensbtn{display:inline-flex;align-items:center;gap:6px}
+.lensbtn svg{width:14px;height:14px}
+.lensbtn[aria-pressed="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+body.loupe .stage,body.loupe .m-spread{cursor:zoom-in}
+.lens{position:fixed;z-index:200;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;pointer-events:none;background-repeat:no-repeat;background-color:#f3ede2;
+  border:5px solid #2a241d;box-shadow:0 0 0 2px rgba(243,237,226,.7),0 24px 40px rgba(0,0,0,.45),inset 0 0 18px rgba(0,0,0,.18);opacity:0;transition:opacity .15s}
+.lens.on{opacity:1}
+.lens::after{content:"";position:absolute;left:50%;top:100%;width:16px;height:70px;margin-left:58px;margin-top:-26px;border-radius:8px;background:#2a241d;transform:rotate(-45deg);transform-origin:50% 0}
+.lens .z{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;white-space:nowrap;font:500 10px/1 var(--f-mono);color:#2a241d;background:rgba(243,237,226,.85);padding:3px 5px;border-radius:8px}
+@media (pointer:coarse){.lens{width:180px;height:180px;margin:-200px 0 0 -90px}}
+
+/* desk magnifier object */
+.deskloupe{position:absolute;left:1150px;top:600px;width:210px;height:210px;z-index:41;cursor:pointer;background:none;border:0;padding:0;transform:rotate(-18deg);
+  filter:drop-shadow(0 16px 14px rgba(40,25,10,.32));transition:transform .25s,opacity .25s}
+.deskloupe:hover{transform:rotate(-24deg) translateY(-8px) scale(1.04)}
+.deskloupe:focus-visible{outline:3px solid var(--uv);outline-offset:4px;border-radius:50%}
+.deskloupe svg{width:100%;height:100%;display:block}
+body.loupe .deskloupe{opacity:.25;transform:rotate(-18deg) scale(.9)}
+.hint.zoom{left:1100px;top:842px;font-size:24px;transform:rotate(-3deg)}
+.phonevid2{position:absolute!important;left:41.7px;top:19.2px;width:154.6px!important;height:314.6px!important;transform:rotate(-8.4deg);border-radius:19px;object-fit:cover;pointer-events:none;background:#efefef}
+.playerlink{position:absolute;left:41.7px;top:19.2px;width:154.6px;height:314.6px;transform:rotate(-8.4deg);border-radius:19px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px;box-sizing:border-box;text-decoration:none;z-index:2}
+.playerlink span{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:14px;background:rgba(20,18,22,.88);color:#fff;font:500 8.5px/1 var(--f-mono);letter-spacing:.4px;white-space:nowrap;box-shadow:0 4px 10px rgba(26,20,13,.25);transition:transform .2s,background .2s}
+.playerlink:hover span{transform:scale(1.06);background:#000}.playerlink:focus-visible{outline:3px solid var(--uv);outline-offset:3px}
+.phonevid{position:absolute!important;left:66.9px;top:9.8px;width:161.3px!important;height:317.9px!important;transform-origin:0 0;transform:rotate(8.77deg);border-radius:20px;object-fit:cover;pointer-events:none}
+.pvid{position:absolute;object-fit:cover;z-index:1;pointer-events:none;background:#111}
+.livelink{display:flex;align-items:center;gap:8px;justify-content:center;background:#1e1e1e;color:#d7ff3a;border-radius:18px;font:500 9.5px/1 var(--f-mono);letter-spacing:1px;text-decoration:none;box-shadow:0 6px 10px rgba(30,18,6,.2)}
+.livelink .dot{width:7px;height:7px;border-radius:50%;background:#ff4d3d;box-shadow:0 0 0 3px rgba(255,77,61,.25);animation:blink 1.4s infinite}
+.livelink:hover{transform:translateY(-2px);background:#000}
+.livelink:focus-visible{outline:3px solid var(--uv);outline-offset:2px}
+@keyframes blink{50%{opacity:.35}}
+.book.uv .livelink{background:#0e0d12;color:#9cffe0}
+.cvlink.lang{font-weight:700;letter-spacing:1.5px}
+/* ===== shared UI layer (audit fixes) ===== */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:fixed;left:var(--s4);top:var(--s2);z-index:300;transform:translateY(-200%);transition:transform .2s}
+.skip:focus{transform:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:36px;min-width:36px;padding:0 var(--s4);border-radius:999px;border:1px solid transparent;
+  font:600 13px/1 var(--f-sans);letter-spacing:.2px;cursor:pointer;text-decoration:none;white-space:nowrap;box-sizing:border-box;transition:transform .15s,background .15s,border-color .15s,color .15s}
+.btn svg{width:15px;height:15px;flex:none}
+.btn:active:not(:disabled){transform:translateY(1px) scale(.97)}
+.btn:disabled{opacity:.38;cursor:default}
+.btn:focus-visible{outline:3px solid var(--uv);outline-offset:3px}
+.btn-primary{background:var(--paper);color:var(--ink)}
+.btn-primary:hover:not(:disabled){background:#fff}
+.btn-ghost{background:transparent;color:var(--paper);border-color:var(--edge)}
+.btn-ghost:hover:not(:disabled){border-color:var(--soft)}
+.btn-ghost[aria-pressed="true"]{background:var(--uv);color:var(--uv-ink);border-color:var(--uv)}
+.light .btn-primary{background:var(--ink);color:var(--paper)}
+.light .btn-primary:hover:not(:disabled){background:#000}
+.light .btn-ghost{background:rgba(243,237,226,.96);color:var(--ink);border-color:rgba(30,30,30,.45)}
+.light .btn-ghost:hover:not(:disabled){background:#fff}
+.btn-chip{min-height:32px;padding:0 var(--s3);font-size:12px}
+.light .btn-chip{background:transparent;border-color:transparent;color:var(--ink)}
+.light .btn-chip:hover{background:rgba(255,255,255,.7)}
+.light .btn-chip[aria-current="true"]{background:var(--ink);color:var(--paper)}
+.pnav{position:absolute;left:0;right:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s2);padding-inline:var(--s2);pointer-events:none}
+.pnav>*{pointer-events:auto}
+.pnav .chips{display:flex;gap:2px;padding:var(--s1);border-radius:999px;background:rgba(243,237,226,.85);box-shadow:0 6px 16px rgba(30,18,6,.18)}
+.pnav [hidden]{display:none!important}
+.pnav .pcount{min-width:58px;text-align:center;padding:8px 12px;border-radius:999px;background:rgba(243,237,226,.92);box-shadow:0 6px 16px rgba(30,18,6,.18);font:500 12px/1 var(--f-mono);letter-spacing:1px;color:var(--ink)}
+.pnav .sep{width:1px;height:24px;background:rgba(30,30,30,.25)}
+.tipbar{position:absolute;left:50%;transform:translateX(-50%);z-index:31;display:flex;align-items:center;gap:var(--s3);max-width:min(680px,calc(100% - 32px));padding:var(--s2) var(--s2) var(--s2) var(--s4);box-sizing:border-box;
+  border-radius:12px;background:var(--ink-dark);color:var(--paper);font:500 13px/1.4 var(--f-sans);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.tipbar b{color:var(--uv);font-weight:600}
+.tipbar .btn{min-height:32px}
+.bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s5);width:100%;max-width:1440px;font:500 12px/1.4 var(--f-mono);letter-spacing:.6px;color:var(--soft);text-align:left}
+.bar .who{display:flex;flex-direction:column;gap:2px;min-width:0}
+.bar .who b{color:var(--paper);font:700 14px/1.2 var(--f-sans);letter-spacing:0}
+.bar .group{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.bar #kbdHint{font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.bar kbd{font:inherit;border:1px solid var(--edge);border-radius:4px;padding:1px 5px;color:var(--paper)}
+@media (max-width:1199px){.bar #kbdHint{display:none}}
+.stamp:focus-visible{outline:3px solid var(--uv);outline-offset:3px;border-radius:6px}
+button.stamp{background:none;border:0;padding:0;font:inherit}
+.pair .pg-wrap{position:relative;width:50%;flex:none}
+.modal .pair .pg-wrap img.pgimg{display:block;width:100%;height:auto;border-radius:0;box-shadow:none;animation:none}
+.modal .pair .pg-wrap img.st{position:absolute;width:auto;height:auto;border-radius:0;box-shadow:none;animation:none}
+.txt{width:min(900px,100%);background:var(--paper);color:var(--ink);border-radius:12px;padding:var(--s5) var(--s6);font:400 16px/1.6 var(--f-sans);box-sizing:border-box;flex:none}
+.txt h2{font:800 24px/1.2 var(--f-sans);margin:0 0 var(--s3);text-wrap:balance}
+.txt h3{font:500 12px/1.3 var(--f-mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-soft);margin:var(--s5) 0 var(--s2)}
+.txt p,.txt ul,.txt ol,.txt dl{margin:0 0 var(--s3);max-width:68ch}
+.txt dt{font:500 12px/1.3 var(--f-mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-soft);margin-top:var(--s3)}
+.txt dd{margin:2px 0 0}
+.txt a{color:var(--stamp-blue)}
+.txt .lbl{font:500 11px/1 var(--f-mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-soft);margin:0 0 var(--s3)}
+.modal .loading{color:var(--paper);font:500 12px var(--f-mono);letter-spacing:1px;text-transform:uppercase}
+.modal.is-loading .pair,.modal.is-loading img.big{opacity:.2}
+body.stamping .stage{cursor:crosshair}
+@media (max-width:760px){.pair{flex-direction:column}.pair .pg-wrap{width:100%}.txt{padding:var(--s4)}}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<a class="btn btn-primary skip" href="#" id="skipText">Skip to text version</a>
+<main class="wrap" id="main">
+  <h1 class="sr-only" id="h1">Marina Kulibaba — UI/UX · Product Designer</h1>
+  <div class="viewport" id="vp">
+    <div class="stage" id="stage" aria-label="Робочий стіл дизайнера з паспортом">
+      <img class="bg" src="img2/desk-bg.jpg" alt="">
+      <div id="objs"></div>
+      <div class="scene3d">
+        <div class="bookwrap">
+        <div class="book closed" id="book" tabindex="0" role="button" aria-label="Відкрити паспорт">
+          <div class="side L" id="sideL"></div>
+          <div class="side R" id="sideR"></div>
+          <div class="cover" id="cover"><div class="face front"><img src="img2/cover.webp" alt="Обкладинка: Designer Passport, Marina Kulibaba"></div><div class="face back Lp" id="coverBack"></div></div>
+        </div>
+        </div>
+      </div>
+      <span class="hint open" id="hintOpen">click the passport to open</span>
+      <button class="sticky" id="sticky" type="button"><span class="k">Recruiter?</span><span class="h">Start here →</span><span class="s">30-second summary</span></button>
+      <span class="hint light">← grab to see more</span>
+      <span class="hint rubber" id="hintRubber">↑ stamp it!</span>
+      <button class="deskloupe" id="deskLoupe" aria-label="Лупа: увімкнути збільшення" aria-pressed="false"><svg viewBox="0 0 200 200" aria-hidden="true">
+        <defs><radialGradient id="gl" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#ffffff" stop-opacity=".75"/><stop offset=".45" stop-color="#dfeaf2" stop-opacity=".35"/><stop offset="1" stop-color="#9fb4c4" stop-opacity=".45"/></radialGradient>
+        <linearGradient id="hd" x1="0" x2="1"><stop offset="0" stop-color="#3a2a1c"/><stop offset=".5" stop-color="#6b4a2f"/><stop offset="1" stop-color="#2e2116"/></linearGradient>
+        <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1d79a"/><stop offset=".5" stop-color="#b8893f"/><stop offset="1" stop-color="#7a5622"/></linearGradient></defs>
+        <rect x="118" y="112" width="24" height="84" rx="11" transform="rotate(-45 130 154)" fill="url(#hd)"/>
+        <rect x="121" y="104" width="18" height="20" rx="4" transform="rotate(-45 130 114)" fill="url(#rim)"/>
+        <circle cx="82" cy="82" r="62" fill="url(#gl)" stroke="url(#rim)" stroke-width="12"/>
+        <path d="M48 64a40 40 0 0 1 26-26" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none" opacity=".8"/></svg></button>
+      <span class="hint zoom">zoom in to look closer ↑</span>
+      <div class="beam" id="beam"></div>
+      <div class="torch" id="torch" role="button" tabindex="0" aria-label="UV-ліхтарик: перетягни на паспорт, щоб побачити приховані історії"><img src="img2/flashlight.png" alt=""></div>
+    </div>
+    <nav class="pnav light" id="nav" aria-label="Passport" hidden>
+      <button class="btn btn-ghost" id="prev" aria-label="Previous spread">←</button>
+      <span class="pcount" id="pcount" aria-hidden="true">1 / 6</span><div class="chips" id="chips" hidden></div>
+      <button class="btn btn-ghost" id="next" aria-label="Next spread">→</button>
+      <span class="sep" aria-hidden="true" hidden></span>
+      <button class="btn btn-primary" id="readBtn" hidden>Read case</button>
+      <button class="btn btn-ghost" id="close">Close passport</button>
+    </nav>
+    <div class="tipbar" id="tipbar" role="status" hidden><span id="tipTxt"></span><button class="btn btn-primary" id="tipClose">OK</button></div>
+    <span class="sr-only" id="count" aria-live="polite">1 / 6</span>
+  </div>
+
+  <div class="mobile" id="mobile">
+    <span class="m-title" id="mTitle"></span>
+    <div class="m-spread" id="mSpread"></div>
+    <span class="m-swipe" id="mSwipe">свайп ← → між сторінками · тапни сторінку, щоб збільшити</span>
+    <div class="m-nav"><button class="btn btn-ghost" id="mPrev">← Назад</button><button class="btn btn-ghost" id="mUv" aria-pressed="false">UV</button><button class="btn btn-primary" id="mRead">Read</button><button class="btn btn-ghost" id="mNext">Далі →</button></div>
+  </div>
+
+  <nav class="bar" aria-label="Tools">
+    <div class="who"><b>Marina Kulibaba</b><span id="whoRole">UI/UX · Product Designer · Kharkiv</span></div>
+    <span id="kbdHint"></span>
+    <div class="group">
+      <button class="btn btn-ghost" id="uvBtn" aria-pressed="false">UV mode</button>
+      <button class="btn btn-ghost lensbtn" id="lensBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6" stroke-linecap="round"/></svg><span>Loupe</span></button>
+      <button class="btn btn-ghost" id="motionBtn" aria-pressed="false">Pause motion</button>
+      <button class="btn btn-ghost" id="langBtn">УКР</button>
+      <button class="btn btn-ghost" id="sumBtn">In 30 sec</button>
+      <button class="btn btn-ghost" id="cvBtn">Resume</button>
+      <button class="btn btn-primary" id="contactBtn">Contacts</button>
+    </div>
+  </nav>
+  <section class="sr-only" id="textVersion" aria-labelledby="tvTitle"><h2 id="tvTitle">Text version</h2><div id="tvBody"></div></section>
+</main>
+
+<div class="lens" id="lens" aria-hidden="true"><span class="z">×3</span></div>
+
+<div class="modal" id="viewer" hidden role="dialog" aria-modal="true" aria-label="Збільшене зображення">
+  <div class="bar2"><button class="btn btn-ghost vnav" id="vPrev" aria-label="Previous spread">←</button><span id="viewerTitle">Zoomed in</span><span class="loading" id="viewerLoading" hidden>Loading…</span><button class="btn btn-ghost vnav" id="vNext" aria-label="Next spread">→</button><button class="btn btn-ghost vnav" id="vTxtBtn" aria-expanded="false" aria-controls="vText">Read as text</button><button class="btn btn-primary" id="viewerClose">Close</button></div>
+  <img class="big" src="" alt="">
+  <div class="pair" id="vPair" hidden></div>
+  <article class="txt" id="vText" hidden></article>
+</div>
+
+<div class="modal" id="contactModal" hidden role="dialog" aria-modal="true" aria-label="Контакти">
+  <div class="contact">
+    <p class="role">Boarding pass · контакти</p>
+    <h2>Marina Kulibaba</h2>
+    <p class="role">UI/UX · Product Designer · Kharkiv · remote</p>
+    <p class="note" id="contactNote" hidden></p>
+    <div class="row"><b>Email</b><span id="emailTxt">kulibaba.marina1988@gmail.com</span></div>
+    <div class="row"><b>LinkedIn</b><a href="https://www.linkedin.com/in/marina-kulibaba" target="_blank" rel="noopener">linkedin.com/in/marina-kulibaba</a></div>
+    <div class="row"><b>Behance</b><a href="https://www.behance.net/319c8068" target="_blank" rel="noopener">behance.net/319c8068</a></div>
+    <div class="row"><b id="rowPortfolio">Портфоліо</b><a href="https://fox-design-1.vercel.app" target="_blank" rel="noopener">fox-design-1.vercel.app</a></div>
+    <div class="acts light"><button class="btn btn-primary" id="copyEmail">Copy email</button><button class="btn btn-ghost" id="contactClose">Close</button></div>
+  </div>
+</div>
+
+<div class="modal" id="sumModal" hidden role="dialog" aria-modal="true" aria-labelledby="sumTitle">
+  <div class="contact summary" id="sumBody"></div>
+</div>
+
+<div class="modal" id="cvModal" hidden role="dialog" aria-modal="true" aria-label="Резюме Marina Kulibaba">
+  <div class="bar2"><span id="cvTitle">Boarding pass · resume</span><a class="btn btn-primary" id="cvPdf" href="img2/Marina-Kulibaba-CV.pdf" target="_blank" rel="noopener">Open PDF</a><button class="btn btn-ghost" id="cvClose">Close</button></div>
+  <img id="cvImg" src="img2/cv.webp" alt="Резюме Marina Kulibaba, UI/UX Designer: профіль, досвід з 2024 року (Vovidal, Cvitku, The COAT, What’s in my Fridge?), освіта, навички, контакти">
+</div>
+
+<script>
+const BS=1.22,BO={x:747,y:383};const toBook=p=>({x:BO.x+(p.x-BO.x)/BS,y:BO.y+(p.y-BO.y)/BS});
+const PW=315,REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SPREADS=[
+ {key:'id',t:['ID — who I am','ID — хто я'],stamps:[['st-id-0',58,128,77,77,['Skill stamp','Штамп навички']],['st-id-1',333,38,73,85,['Vovidal → open the spread','Vovidal → відкрити розворот'],1],['st-id-2',410,32,69,82,['Cvitku → open the case','Cvitku → відкрити кейс'],2],['st-id-3',475,40,69,82,['Plerdy · B2B SaaS — ask me about it','Plerdy · B2B SaaS — запитайте мене'],'ask'],['st-id-4',542,33,75,75,['Fintech · B2B SaaS','Fintech · B2B SaaS']],['st-id-5',512,219,111,72,['Let’s build what matters','Let’s build what matters']]]},
+ {key:'vovidal',t:['Vovidal — crypto exchange, 270+ screens','Vovidal — криптобіржа, 270+ екранів'],stamps:[]},
+ {key:'cvitku',t:['Cvitku — fintech, +35% traders','Cvitku — fintech, +35% трейдерів'],stamps:[['st-cvitku-0',505,249,41,41,['Fintech','Fintech']]]},
+ {key:'fridge',t:["What's in my Fridge? — AI app","What's in my Fridge? — AI-застосунок"],stamps:[['st-fridge-0',20,373,78,78,['AI tools','AI tools']],['st-fridge-1',196,358,77,77,['AI prototyper','AI prototyper']],['st-fridge-2',484,243,138,64,['Live → open the app ↗','Live → відкрити застосунок ↗'],null,'https://food-iota-silk.vercel.app']],
+   video:{x:384,y:49.5,w:84,h:174,r:12,src:'img2/fridge.mp4',poster:'img2/fridge-poster.jpg',label:'Screen recording of the What’s in my Fridge app'}},
+ {key:'platefit',t:['PlateFit — workouts + plate','PlateFit — тренування + тарілка'],stamps:[['st-platefit-0',223,20,62,62,['User first','User first']]]},
+ {key:'permit',t:['Work permit — freelance','Work permit — freelance'],stamps:[['st-permit-0',9,22,82,82,['Product thinker','Product thinker']],['st-permit-1',505,11,119,73,['Visa · Freelance','Visa · Freelance']],['st-permit-2',518,83,87,38,['Approved','Approved']]],
+   video:{x:24.2,y:294.5,w:130.5,h:87,r:2.25,rot:-2,src:'img2/vovidal-promo.mp4',poster:'img2/vovidal-promo-poster.jpg',label:'Vovidal crypto promo page — motion preview'}}
+];
+const TEXT={
+id:{en:`<h2>ID — who I am</h2><p><b>Marina Kulibaba</b> — UI/UX · Product Designer, Kharkiv, Ukraine.</p><dl><dt>Industries</dt><dd>Fintech · B2B SaaS · E-commerce</dd><dt>Focus</dt><dd>Product thinking: user + business + UX</dd><dt>Languages</dt><dd>Ukrainian · English</dd><dt>Contact</dt><dd>kulibaba.marina1988@gmail.com</dd></dl><p>2 real client fintech products, one of them launched.</p><h3>Visas · projects</h3><p>Vovidal · Cvitku · Plerdy (B2B SaaS — ask me about it) · Fintech</p><h3>Work record</h3><ul><li>2026 — VibeCoding course: AI prototyping · Lovable · Cursor · Figma Make</li><li>2025 — Cvitku · The COAT: crypto wallet + web dashboard · fashion marketplace (test assignment)</li><li>2024 — Freelance UI/UX designer: Vovidal crypto payments — launched</li><li>2023 — UI/UX Design po-liudsky (Alesia Boiko course)</li><li>2022 — GoIT · UI/UX, first course</li></ul><p>Product thinking = user + business + UX · AI-assisted prototyping · web + mobile, end-to-end.</p><p>Next destination: let’s build what matters.</p>`,
+ uk:`<h2>ID — хто я</h2><p><b>Марина Кулібаба</b> — UI/UX · Product Designer, Харків, Україна.</p><dl><dt>Індустрії</dt><dd>Fintech · B2B SaaS · E-commerce</dd><dt>Фокус</dt><dd>Продуктове мислення: user + business + UX</dd><dt>Мови</dt><dd>Українська · англійська</dd><dt>Контакт</dt><dd>kulibaba.marina1988@gmail.com</dd></dl><p>2 реальні клієнтські фінтех-продукти, один із них запущено.</p><h3>Візи · проєкти</h3><p>Vovidal · Cvitku · Plerdy (B2B SaaS — запитайте мене) · Fintech</p><h3>Трудовий запис</h3><ul><li>2026 — курс VibeCoding: AI-прототипування · Lovable · Cursor · Figma Make</li><li>2025 — Cvitku · The COAT: криптогаманець + веб-дашборд · fashion marketplace (тестове завдання)</li><li>2024 — UI/UX-дизайнерка на фрилансі: Vovidal, криптоплатежі — запущено</li><li>2023 — курс «UI/UX Design по-людськи» (Алеся Бойко)</li><li>2022 — GoIT · UI/UX, перший курс</li></ul><p>Продуктове мислення = user + business + UX · AI-прототипування · web + mobile від початку до кінця.</p><p>Наступна точка: let’s build what matters.</p>`},
+cvitku:{en:`<h2>Cvitku — crypto analytics &amp; trading · client, 2025</h2><p>Fintech · UI/UX + brand. <b>+35%</b> new traders and investors after launch.</p><p><b>Scope:</b> crypto wallet app for iOS &amp; Android (registration and main wallet flow) + web dashboard for analytics &amp; trading + brand identity.</p><h3>01 / Problem</h3><p>Crypto platforms scare beginners: too much data and jargon, so they never reach their first trade.</p><h3>02 / Key insight</h3><p>Beginners and traders need the same screen — only the depth differs.</p><h3>03 / My decisions</h3><ol><li>Portfolio at the centre — every section is 1 step away.</li><li>Analytics as a separate layer — beginners see the essentials, traders go deeper.</li><li>4 steps to a trade — Analyze → Choose → Invest → Track.</li></ol><p>My role: research → IA &amp; flows → UI (mobile + web) → brand.</p><h3>Product experience</h3><p>Web dashboard: profile, project rating, market and token purchase. Mobile screens: Home, Plan details, Trading, Market overview. Design principle: clarity over noise.</p><h3>Result — a platform that</h3><ul><li>works for beginners and traders</li><li>takes analysis → trade in 4 steps</li><li>keeps one logic for mobile + web</li><li>has a brand that removes fear</li></ul>`,
+ uk:`<h2>Cvitku — аналітика й трейдинг крипти · клієнт, 2025</h2><p>Fintech · UI/UX + бренд. <b>+35%</b> нових трейдерів та інвесторів після запуску.</p><p><b>Обсяг:</b> криптогаманець для iOS і Android (реєстрація та основний флоу гаманця) + веб-дашборд для аналітики й трейдингу + айдентика бренду.</p><h3>01 / Проблема</h3><p>Новачків лякають криптоплатформи: забагато даних і термінів, тож до першої угоди вони не доходять.</p><h3>02 / Ключовий інсайт</h3><p>Новачку й трейдеру потрібен той самий екран — різниться лише глибина.</p><h3>03 / Мої рішення</h3><ol><li>Портфель у центрі — кожен розділ за один крок від дашборду.</li><li>Аналітика окремим шаром — новачок бачить головне, трейдер іде глибше.</li><li>4 кроки до угоди — Analyze → Choose → Invest → Track.</li></ol><p>Моя роль: дослідження → IA і флоу → UI mobile + web → бренд.</p><h3>Продукт</h3><p>Веб-дашборд: профіль, рейтинг проєкту, ринок і покупка токенів. Мобільні екрани: Головна, Деталі плану, Торгівля, Огляд ринку. Принцип дизайну: ясність замість шуму.</p><h3>Результат — платформа, яка</h3><ul><li>працює для новачків і трейдерів</li><li>веде від аналізу до угоди за 4 кроки</li><li>має одну логіку для mobile + web</li><li>має бренд, що знімає страх</li></ul>`},
+fridge:{en:`<h2>What’s in my Fridge? — AI recipes from what’s at home · own project, 2026</h2><p>I came up with, designed and launched the app: pick your ingredients — AI suggests recipes. From start to recipes in 3 steps.</p><dl><dt>Context</dt><dd>There’s food at home, but no idea what to cook with it.</dd><dt>Problem</dt><dd>Recipe apps start with the dish, not the fridge. People buy extra food or throw it away.</dd><dt>Goals</dt><dd>Fast · no extra shopping · less food waste.</dd><dt>Key decisions</dt><dd>1. Start with ingredients, not the dish. 2. A chef character instead of a dry form. 3. Only 3 steps to recipes.</dd><dt>Solution</dt><dd>Pick what’s in your fridge — AI finds recipes from exactly that.</dd></dl><h3>Outcome</h3><ul><li>3 steps from start to recipes</li><li>AI — recipes from what you have</li><li>1 character guides the whole way</li></ul><p>Next step: measure how many people get from start to their first recipe.</p><p><a href="https://food-iota-silk.vercel.app" target="_blank" rel="noopener">Open the live app ↗</a></p>`,
+ uk:`<h2>What’s in my Fridge? — AI-рецепти з того, що вже є вдома · свій проєкт, 2026</h2><p>Я придумала, спроєктувала і запустила застосунок: обираєш продукти — AI пропонує рецепти. Від старту до рецептів — 3 кроки.</p><dl><dt>Контекст</dt><dd>Вдома є продукти, але немає ідеї, що з них приготувати.</dd><dt>Проблема</dt><dd>Сервіси рецептів починають зі страви, а не з холодильника. Продукти докуповують або викидають.</dd><dt>Цілі</dt><dd>Швидко · без зайвих покупок · менше викинутої їжі.</dd><dt>Ключові рішення</dt><dd>1. Почати з продуктів, а не зі страви. 2. Персонаж-кухар замість сухої форми. 3. Лише 3 кроки до рецептів.</dd><dt>Рішення</dt><dd>Обираєш, що є в холодильнику, — AI підбирає рецепти саме з цього.</dd></dl><h3>Результат</h3><ul><li>3 кроки від старту до рецептів</li><li>AI — рецепти з наявних продуктів</li><li>1 персонаж веде через увесь шлях</li></ul><p>Наступний крок: виміряти, скільки людей доходять від старту до першого рецепта.</p><p><a href="https://food-iota-silk.vercel.app" target="_blank" rel="noopener">Відкрити живий застосунок ↗</a></p>`},
+platefit:{en:`<h2>PlateFit — daily workouts + plate tracker · B2C mobile, health &amp; fitness</h2><p>An app concept where workouts and food are one system: you train → the calorie budget updates itself, and dinner already has a suggestion.</p><dl><dt>Role</dt><dd>Product designer, own concept: research in FigJam → IA &amp; scenarios → mobile app UI.</dd><dt>Problem</dt><dd>Workouts and food live in different apps. People work out on their own what a workout “earned” and what to eat in the evening. Photo trackers miss cooking oil — the most common “invisible” hundred kcal.</dd><dt>Goals</dt><dd>Log a meal — 2 taps, under 10 s · start a workout — 2 taps · onboarding — 6 steps, under 2 min.</dd></dl><h3>Key decisions</h3><ol><li>No “+” button — log from the meal slot: the app already knows it’s dinner at 19:00.</li><li>“Today” is the main tab — the day’s workout, live plate and remaining kcal on one screen.</li><li>AI suggests, the person confirms — a kcal range instead of an “exact” number, plus the “oil or sauce?” question.</li><li>Load fitted to the person — a “How was it?” calibration and a limits &amp; injuries screen with exercise swaps.</li></ol><p>Process: research (FigJam) → IA (25.10) → UI · Dark (26.10) → 28 screens with states. Status: UI stage, MVP scope; next — a usability test of the “no +” idea.</p><h3>Key screens</h3><p>Today: +214 kcal for the workout · AI photo: 440–520 kcal + “oil?” · Workout: 35 min, 6 exercises. Flow: workout → +kcal to budget → dinner tip → log from slot.</p><p>Goals set in the IA: 2 taps to log a meal from a photo (under 10 s) · 1 tap to repeat yesterday’s · 0 taps — the dinner tip appears by itself. In progress, 2026.</p>`,
+ uk:`<h2>PlateFit — тренування на день + трекер тарілки · B2C mobile, health &amp; fitness</h2><p>Концепт застосунку, де тренування і харчування — одна система: потренувалась → бюджет калорій оновився сам, а на вечерю вже є підказка.</p><dl><dt>Роль</dt><dd>Product designer, власний концепт: дослідження у FigJam → IA і сценарії → UI мобільного застосунку.</dd><dt>Проблема</dt><dd>Тренування і їжа живуть у різних застосунках. Людина сама рахує, скільки «заробила» за тренування і що їсти ввечері. Фото-трекери не бачать олію — найчастішу «невидиму» сотню ккал.</dd><dt>Цілі</dt><dd>Запис їжі — 2 тапи, до 10 с · старт тренування — 2 тапи · онбординг — 6 кроків, до 2 хв.</dd></dl><h3>Ключові рішення</h3><ol><li>Без кнопки «+» — запис зі слоту прийому їжі: застосунок уже знає, що це вечеря о 19:00.</li><li>«Сьогодні» — головний таб: тренування дня, жива тарілка і залишок ккал на одному екрані.</li><li>AI пропонує — людина підтверджує: діапазон ккал замість «точної» цифри і питання «олія чи соус?».</li><li>Навантаження під людину: калібрування «Як було?» та екран обмежень і травм із замінами вправ.</li></ol><p>Процес: дослідження (FigJam) → IA (25.10) → UI · Dark (26.10) → 28 екранів зі станами. Статус: UI-етап, MVP-скоуп; далі — юзабіліті-тест гіпотези «без +».</p><h3>Ключові екрани</h3><p>Сьогодні: +214 ккал за тренування · AI-фото: 440–520 ккал + «олія?» · Тренування: 35 хв, 6 вправ. Флоу: тренування → +ккал до бюджету → підказка вечері → запис зі слоту.</p><p>Цілі, закладені в IA: 2 тапи — записати їжу з фото (до 10 с) · 1 тап — «Повторити вчорашню» · 0 тапів — підказка вечері показується сама. In progress, 2026.</p>`},
+vovidal:{en:`<h2>Vovidal — crypto exchange</h2><p>Client project, 2024 · fintech · web + mobile · launched.</p><p><b>270+ screens</b> for desktop, tablet and mobile, light and dark theme.</p><h3>Problem</h3><p>Crypto platforms overwhelm people with complex financial data — and they get lost.</p><h3>Goal</h3><p>A dashboard that organizes data clearly and helps people make decisions.</p><h3>My solutions</h3><ol><li><b>Portfolio at a glance</b> — assets, market trends, returns.</li><li><b>Important first</b> — key financial data on top, the rest one level deeper.</li><li><b>Simple onboarding → flows</b> — sign in → wallet → trading → Earn.</li></ol><p><b>My role:</b> UX/UI for web and mobile → UI kit → brand.</p><h3>Result</h3><ul><li>Launched in 2024</li><li>19 modules: from sign-in to options trading</li><li>Desktop · tablet · mobile</li><li>Light and dark theme</li></ul><p>Screens on the spread: ICO listing, options trading, and the mobile app — home, trading, wallet, my portfolio.</p>`,
+  uk:`<h2>Vovidal — криптобіржа</h2><p>Клієнтський проєкт, 2024 · fintech · web + mobile · запущено.</p><p><b>270+ екранів</b> для desktop, планшета й mobile, світла й темна тема.</p><h3>Проблема</h3><p>Криптоплатформи засипають людину складними фінансовими даними — і вона губиться.</p><h3>Ціль</h3><p>Дашборд, що розкладає дані по поличках і допомагає ухвалювати рішення.</p><h3>Мої рішення</h3><ol><li><b>Портфель з першого погляду</b> — активи, тренди ринку, дохідність.</li><li><b>Важливе — першим</b> — ключові фінансові дані зверху, решта глибше.</li><li><b>Простий онбординг → флоу</b> — вхід → гаманець → торгівля → Earn.</li></ol><p><b>Моя роль:</b> UX/UI для web і mobile → UI kit → бренд.</p><h3>Результат</h3><ul><li>Запущено у 2024</li><li>19 модулів: від входу до опціонної торгівлі</li><li>Desktop · планшет · mobile</li><li>Світла й темна тема</li></ul><p>Екрани на розвороті: ICO-лістинг, опціонна торгівля і мобільний застосунок — головна, торгівля, гаманець, мій портфель.</p>`},
+permit:{en:`<h2>Work permit: freelance</h2><p>Product thinking, UX/UI for mobile and web, branding and live AI prototypes.</p><ol><li><b>Real clients</b> — Vovidal (launched) · Cvitku (+35% traders) · B2B SaaS Plerdy · LionsInLaw (promo page &amp; banners)</li><li><b>Product thinking</b> — user + business + UX · personas &amp; user flows · IA for complex data</li><li><b>Many hats</b> — UX/UI mobile + web · brand &amp; identity · client presentations</li><li><b>AI prototypes</b> — Claude · Cursor · Lovable · Figma Make · live apps online</li><li><b>My own path</b> — Fux services brand · Tiny Apps series · learning every year</li></ol><p>Work shown: Vovidal brand &amp; product (crypto promo page, motion) · Cvitku web dashboard · What’s in my Fridge? (AI) · LionsInLaw law-firm promo site.</p>`,
+ uk:`<h2>Work permit: freelance</h2><p>Продуктове мислення, UX/UI для mobile і web, бренд і живі AI-прототипи.</p><ol><li><b>Реальні клієнти</b> — Vovidal (запущено) · Cvitku (+35% трейдерів) · B2B SaaS Plerdy · LionsInLaw (промо-сторінка й банери)</li><li><b>Продуктове мислення</b> — user + business + UX · персони й user flows · IA для складних даних</li><li><b>Багато ролей</b> — UX/UI mobile + web · бренд і айдентика · презентації клієнтам</li><li><b>AI-прототипи</b> — Claude · Cursor · Lovable · Figma Make · живі застосунки онлайн</li><li><b>Свій шлях</b> — бренд послуг Fux · серія Tiny Apps · вчуся щороку</li></ol><p>Роботи: Vovidal — бренд і продукт (крипто-промосторінка, анімація) · Cvitku — веб-дашборд · What’s in my Fridge? (AI) · LionsInLaw — промо-сайт юридичної компанії.</p>`}};
+
+const CHIP=['ID','Vovidal','Cvitku','Fridge','PlateFit',['Work permit','Work permit']];
+// ---------- language (EN default, UA switch)
+let lang='en',deep=-1;try{lang=localStorage.getItem('passport-lang')||'en';const q=(location.hash||'').replace('#','').toLowerCase().split('-');
+  for(const tok of q){if(tok==='uk'||tok==='en')lang=tok;const k=['id','vovidal','cvitku','fridge','platefit','permit'].indexOf(tok);if(k>=0)deep=k;}}catch(e){}
+const L=x=>Array.isArray(x)?x[lang==='en'?0:1]:x;
+SPREADS.forEach(sp=>Object.defineProperty(sp,'title',{get(){return L(sp.t);}}));
+const I18N={
+ left:['Left page','Ліва сторінка'],right:['Right page','Права сторінка'],zoomed:['Zoomed in','Збільшено'],wheel:[' · scroll to zoom',' · колесо — зум'],
+ copied:['Copied ✓','Скопійовано ✓'],copy:['Copy email','Скопіювати email'],selected:['Selected — press Cmd+C','Виділено — натисни Cmd+C'],
+ loupeOn:['Loupe: turn zoom off','Лупа: вимкнути збільшення'],loupeOff:['Loupe: turn zoom on','Лупа: увімкнути збільшення'],zoomHint:['zoom in to look closer ↑','візьми лупу ↑'],zoomHintOn:['click again to put it down','клікни ще раз, щоб покласти'],
+ tapZoom:['Tap to zoom','Тапни, щоб збільшити'],bookClosed:['Open the passport','Відкрити паспорт'],bookOpen:['Designer passport','Паспорт дизайнера'],
+ pauseMotion:['Pause motion','Зупинити рух'],playMotion:['Play motion','Увімкнути рух'],loading:['Loading…','Завантаження…'],textVersion:['Text version','Текстова версія'],
+ tip:['<b>Tip:</b> flip pages with the arrows or the ← → keys. Project stamps are clickable, page corners can be dragged, and the UV flashlight reveals hidden notes.','<b>Підказка:</b> гортай стрілками або клавішами ← →. Штампи проєктів клікабельні, куточок сторінки можна тягнути, а UV-ліхтарик показує приховані нотатки.'],
+ stampClick:['now click a page ↓','тепер клікни на сторінку ↓'],spread:['Spread','Розворот'],yourStamp:['Your stamp','Твій штамп'],liveApp:['LIVE APP ↗','LIVE ДЕМО ↗'],showText:['Read as text','Читати текстом'],hideText:['Hide text','Сховати текст'],textNote:['Same content as text — easy to read and copy','Те саме, але текстом — зручно читати й копіювати'],
+ askPlerdy:['Plerdy · B2B SaaS — the case isn’t public yet. Write to me and I’ll walk you through the project on a call.','Plerdy · B2B SaaS — кейс ще не опублікований. Напишіть мені, і я розповім про проєкт на дзвінку.'],
+ playerTag:['▶ Open the player ↗','▶ Відкрити плеєр ↗'],playerAria:['Memory Player — gift player app, opens in a new tab','Memory Player — застосунок-подарунок, відкривається в новій вкладці'],yardTag:['Yard Twin · 3D dashboard ↗','Yard Twin · 3D-дашборд ↗'],yardAria:['Yard Twin — 3D warehouse operations dashboard, live prototype (opens in a new tab)','Yard Twin — 3D-дашборд складських операцій, живий прототип (нова вкладка)'],coatTag:['The COAT · test assignment ↗','The COAT · тестове завдання ↗'],coatAria:['The COAT fashion marketplace — test assignment, full case in the portfolio (opens in a new tab)','The COAT, fashion marketplace — тестове завдання, повний кейс у портфоліо (нова вкладка)']};
+const t=k=>L(I18N[k]);
+const UI=[['#readBtn',['Read case','Читати кейс']],['#mRead',['Read','Читати']],['#skipText',['Skip to text version','Перейти до текстової версії']],['#tvTitle',['Text version','Текстова версія']],['#whoRole',['UI/UX · Product Designer · Kharkiv','UI/UX · Product Designer · Харків']],['#lensBtn span',['Loupe','Лупа']],['#viewerLoading',['Loading…','Завантаження…']],['#cvTitle',['Boarding pass · resume','Boarding pass · резюме']],['#cvPdf',['Open PDF','Відкрити PDF']],['#tipClose',['Got it','Зрозуміло']],['#hintOpen',['click the passport to open','натисни на паспорт, щоб відкрити']],['.hint.light',['← grab to see more','← візьми, щоб побачити більше']],['#hintRubber',['↑ stamp it!','↑ постав штамп!']],
+ ['#close',['Close passport','Закрити паспорт']],['#uvBtn',['UV mode','UV-режим']],['#cvBtn',['Resume','Резюме']],['#sumBtn',['In 30 sec','За 30 секунд']],['#sticky .k',['Recruiter?','Рекрутер?']],['#sticky .h',['Start here →','Почніть тут →']],['#sticky .s',['30-second summary','Коротко за 30 секунд']],['#contactBtn',['Contacts','Контакти']],
+ ['#mPrev',['← Back','← Назад']],['#mNext',['Next →','Далі →']],['#mSwipe',['swipe ← → between pages · tap a page to zoom','свайп ← → між сторінками · тапни сторінку, щоб збільшити']],
+ ['#viewerClose',['Close','Закрити']],['#cvClose',['Close','Закрити']],['#contactClose',['Close','Закрити']],['#copyEmail',['Copy email','Скопіювати email']],
+ ['#contactModal .role',['Boarding pass · contacts','Boarding pass · контакти']],['#rowPortfolio',['Portfolio','Портфоліо']],['#kbdHint',null]];
+const ATTR=[['#stage','aria-label',['Designer’s desk with the passport','Робочий стіл дизайнера з паспортом']],['#cover .front img','alt',['Cover: Designer Passport, Marina Kulibaba','Обкладинка: Designer Passport, Marina Kulibaba']],
+ ['#prev','aria-label',['Previous spread','Попередній розворот']],['#vPrev','aria-label',['Previous spread','Попередній розворот']],['#vNext','aria-label',['Next spread','Наступний розворот']],['#next','aria-label',['Next spread','Наступний розворот']],['#nav','aria-label',['Passport pages','Сторінки паспорта']],
+ ['#torch','aria-label',['UV flashlight: drag it over the passport to reveal hidden notes (Enter toggles UV mode)','UV-ліхтарик: перетягни на паспорт, щоб побачити приховані нотатки (Enter вмикає UV-режим)']],
+ ['.scan','aria-label',['Barcode: open the resume','Штрихкод: відкрити резюме']],['#viewer','aria-label',['Zoomed view','Збільшений перегляд']],['#contactModal','aria-label',['Contacts','Контакти']],['#cvModal','aria-label',['Resume of Marina Kulibaba','Резюме Marina Kulibaba']],
+ ['#cvImg','alt',['Resume of Marina Kulibaba, UI/UX Designer: profile, experience since 2024 (Vovidal, Cvitku, The COAT, What’s in my Fridge?), education, skills, contacts','Резюме Marina Kulibaba, UI/UX Designer: профіль, досвід з 2024 року (Vovidal, Cvitku, The COAT, What’s in my Fridge?), освіта, навички, контакти']],
+ ['.bar','aria-label',['Tools','Інструменти']]];
+function applyLang(){document.documentElement.lang=lang==='en'?'en':'uk';if(typeof langExtras==='function'&&$('coatTag'))langExtras();
+ ATTR.forEach(([sel,a,v])=>document.querySelectorAll(sel).forEach(el=>el.setAttribute(a,L(v))));
+ book.setAttribute('aria-label',isOpen?t('bookOpen'):t('bookClosed'));
+ objs.querySelectorAll('.obj').forEach(o=>{const a=ALT[o.dataset.id];const m=o.querySelector('img,video');if(m&&a){m.tagName==='IMG'?m.alt=L(a):m.setAttribute('aria-label',L(a));}});
+ $('tvBody').innerHTML=SPREADS.map(sp=>`<article>${TEXT[sp.key][lang]}</article>`).join('');$('tvBody').querySelectorAll('a').forEach(x=>x.tabIndex=-1);
+ const tt=$('tipTxt');if(tt)tt.innerHTML=t('tip');
+ $('motionBtn').textContent=motion?t('pauseMotion'):t('playMotion');
+ buildChips();
+ UI.forEach(([sel,v])=>{const el=document.querySelector(sel);if(el&&v)el.textContent=L(v);});
+ const kh=$('kbdHint');if(kh)kh.innerHTML=lang==='en'?'<kbd>←</kbd> <kbd>→</kbd> flip · <kbd>Z</kbd> loupe · <kbd>Esc</kbd> close':'<kbd>←</kbd> <kbd>→</kbd> гортати · <kbd>Z</kbd> лупа · <kbd>Esc</kbd> закрити';
+ $('langBtn').textContent=lang==='en'?'УКР':'EN';$('langBtn').setAttribute('aria-label',lang==='en'?'Перемкнути на українську':'Switch to English');
+ const hz=document.querySelector('.hint.zoom');if(hz)hz.textContent=loupe?t('zoomHintOn'):t('zoomHint');}
+function setLang(v){lang=v;try{localStorage.setItem('passport-lang',v);}catch(e){}applyLang();render(cur);setCoverBack(cur);if(!isOpen)sideL.style.visibility='hidden';mobile(mi);setStampMode(stampMode);}
+const OBJS=[['obj-0',161,150,243,379],['obj-1',233,150,239,374],['obj-2',253,149,234,376],['obj-3',195,501,261,286],['obj-4',579,123,211,237],['obj-5',995,70,261,270],['obj-6',858,236,439,247,1],['obj-7',771,133,368,288],['obj-8',780,417,293,393],['obj-12',975,452,439,247,'yard'],['obj-9',1087,220,51,51],['obj-10',0,450,179,179],['obj-11',298,103,104,95]];
+const ALT={'obj-12':['Screen recording of Yard Twin, a 3D warehouse operations dashboard','Запис екрана Yard Twin — 3D-дашборд для складських операцій'],'obj-0':['Phone with the What’s in my Fridge? app','Телефон з екраном What’s in my Fridge?'],'obj-1':['Phone with the Memory Player gift app','Телефон із застосунком-подарунком Memory Player'],'obj-2':['Phone with the PlateFit app','Телефон з екраном PlateFit'],'obj-3':['Polaroid: Kharkiv · 2026','Полароїд: Kharkiv · 2026'],'obj-4':['Polaroid: work in progress','Полароїд: work in progress'],'obj-5':['Gerbera flower','Квітка гербери'],'obj-6':['Video: The COAT fashion marketplace','Відео: fashion marketplace The COAT'],'obj-7':['Boarding pass with contacts','Посадковий талон з контактами'],'obj-8':['Receipt: work record 2022–2026','Чек: work record 2022–2026'],'obj-9':['Pin','Кнопка'],'obj-10':['Rubber stamp — drag it, or click it and then a page','Гумовий штамп — перетягни або клікни, а потім на сторінку'],'obj-11':['Paper clip','Затискач для паперу']};
+const $=id=>document.getElementById(id);
+const stage=$('stage'),vp=$('vp'),book=$('book'),sideL=$('sideL'),sideR=$('sideR'),nav=$('nav');
+let cur=0,isOpen=false,busy=false,uv=false,scale=1,motion=!REDUCED,stampMode=false;
+// visitor's own ink stamps: live only while the passport is open (pages) or closed (cover)
+let imprints={};try{localStorage.removeItem('passport-imprints');}catch(e){}
+const saveInk=()=>{};
+function wipeInk(scope,keep){scope.querySelectorAll('.stamp.ink').forEach(el=>{el.style.transition='opacity .45s';el.style.opacity=0;setTimeout(()=>el.remove(),REDUCED?0:460);});
+  const c=keep?imprints[keep]:null;imprints={};if(c)imprints[keep]=c;}
+const src=(k,side,u)=>`${lang==='en'?'en':'img2'}/spread-${k}${u?'-uv':''}-${side}.webp`;
+const pre=new Set();function preloadAround(i){[i-1,i,i+1].forEach(k=>{const s=SPREADS[k];if(!s)return;['L','R'].forEach(sd=>[0,1].forEach(u=>{const h=src(s.key,sd,u);if(!pre.has(h)){pre.add(h);new Image().src=h;}}));});}
+
+function fit(){const r=vp.getBoundingClientRect();scale=Math.min(r.width/1440,r.height/900)||.2;stage.style.transform=`translate(${-720*scale}px,${-450*scale}px) scale(${scale})`;
+  const top=r.height/2-450*scale;const n=$('nav');if(n)n.style.top=Math.round(top+668*scale)+'px';const tb=$('tipbar');if(tb)tb.style.top=Math.round(Math.max(8,top+14*scale))+'px';}
+addEventListener('resize',fit);fit();
+
+// ---------- page faces
+function stampEl([id,x,y,w,h,label,link,href],side){const st=document.createElement(href?'a':link!=null?'button':'div');st.className='stamp';if(href){st.href=href;st.target='_blank';st.rel='noopener';}if(link!=null){st.type='button';}if(href||link!=null)st.setAttribute('aria-label',L(label));
+  Object.assign(st.style,{left:(side==='L'?x:x-PW)+'px',top:y+'px',width:w+'px',height:h+'px'});st.dataset.label=L(label);if(link!=null)st.dataset.link=link;
+  st.innerHTML=`<img class="n" src="img2/${id}.webp" alt="${L(label)}"><img class="u" src="img2/${id}-uv.webp" alt="">`;return st;}
+function face(i,side,extra){const s=SPREADS[i];const f=document.createElement('div');f.className='face '+(side==='L'?'Lp':'Rp')+(extra?' '+extra:'');
+  f.innerHTML=`<img class="pg n" src="${src(s.key,side)}" alt="${side==='L'?t('left'):t('right')}: ${s.title}"><img class="pg u" src="${src(s.key,side,1)}" alt=""><div class="gutter"></div>`;
+  s.stamps.forEach(t=>{if((t[1]<PW)===(side==='L'))f.appendChild(stampEl(t,side));});
+  if(s.video&&((s.video.x<PW)===(side==='L'))){const v=s.video,vd=document.createElement('video');Object.assign(vd,{src:v.src,poster:v.poster,muted:true,loop:true,autoplay:motion,playsInline:true});vd.setAttribute('aria-hidden','true');vd.setAttribute('muted','');vd.setAttribute('playsinline','');vd.className='pvid';
+    Object.assign(vd.style,{left:(side==='L'?v.x:v.x-PW)+'px',top:v.y+'px',width:v.w+'px',height:v.h+'px',borderRadius:v.r+'px',transform:v.rot?`rotate(${v.rot}deg)`:''});vd.setAttribute('aria-label',v.label||'');f.appendChild(vd);}
+  if(s.live&&side==='R'){const a=document.createElement('a');a.className='stamp livelink';a.href=s.live.href;a.target='_blank';a.rel='noopener';a.dataset.label=L(['Opens the live app in a new tab','Відкриває живий застосунок у новій вкладці']);
+    Object.assign(a.style,{left:(s.live.x-PW)+'px',top:s.live.y+'px',width:s.live.w+'px',height:s.live.h+'px'});a.innerHTML=`<span class="dot"></span><span>${t('liveApp')}</span>`;f.appendChild(a);}
+  (imprints[i]||[]).filter(r=>r.side===side).forEach(r=>f.appendChild(inkEl(r)));
+  const sh=document.createElement('div');sh.className='shade';f.appendChild(sh);return f;}
+function setSide(el,i,side){el.innerHTML='';const f=face(i,side);el.appendChild(f);
+  const hit=document.createElement('div');hit.className='hit';const c=document.createElement('div');c.className='corner';el.append(hit,c);
+  f.querySelectorAll('.stamp').forEach(st=>el.appendChild(st));}
+function setCoverBack(i){const b=face(i,'L','back');b.id='coverBack';$('coverBack').replaceWith(b);}
+function pressStamps(){const st=[...book.querySelectorAll('.side>.stamp:not(.ink)')];st.forEach(s=>{s.classList.remove('press');s.classList.add('wait');});
+  st.forEach((s,k)=>setTimeout(()=>{s.classList.remove('wait');s.classList.add('press');},REDUCED?0:220+k*170));}
+function render(i){setSide(sideL,i,'L');setSide(sideR,i,'R');preloadAround(i);
+  $('count').textContent=t('spread')+' '+(i+1)+' / '+SPREADS.length+': '+SPREADS[i].title;$('pcount').textContent=(i+1)+' / '+SPREADS.length;$('prev').disabled=i===0;$('next').disabled=i===SPREADS.length-1;
+  $('chips').querySelectorAll('button').forEach((b,k)=>b.setAttribute('aria-current',k===i?'true':'false'));
+  if(isOpen){try{history.replaceState(null,'','#'+(lang==='uk'?'uk-':'')+SPREADS[i].key);}catch(e){}}setInert();}
+function buildChips(){const c=$('chips');c.innerHTML='';SPREADS.forEach((sp,k)=>{const b=document.createElement('button');b.type='button';b.className='btn btn-chip';b.textContent=L(CHIP[k]);b.setAttribute('aria-label',sp.title);
+  b.setAttribute('aria-current',k===cur?'true':'false');b.onclick=()=>{if(k!==cur)flip(0,k);};c.appendChild(b);});}
+function setInert(){sideL.inert=sideR.inert=!isOpen;$('cover').inert=isOpen;book.tabIndex=isOpen?-1:0;}
+
+// ---------- open / close
+function open(){if(isOpen||busy)return;busy=true;tidyDesk();wipeInk($('cover'));document.body.classList.add('opened');setTimeout(passAside,REDUCED?0:380);
+render(cur);setCoverBack(cur);sideL.style.visibility='hidden';
+  book.classList.remove('closed');book.removeAttribute('role');book.setAttribute('aria-label',t('bookOpen'));$('hintOpen').style.opacity=0;
+  setTimeout(()=>book.classList.add('open'),REDUCED?0:420);
+  setTimeout(()=>{sideL.style.visibility='';$('cover').style.visibility='hidden';isOpen=true;busy=false;nav.hidden=false;fit();render(cur);pressStamps();showTipBar();$('next').disabled?$('prev').focus({preventScroll:true}):$('next').focus({preventScroll:true});},REDUCED?0:1360);}
+function close(){if(!isOpen||busy)return;busy=true;tidyDesk();document.body.classList.remove('opened');wipeInk(book);nav.hidden=true;$('tipbar').hidden=true;setStampMode(false);setUv(false);setCoverBack(cur);
+  $('cover').style.visibility='';sideL.style.visibility='hidden';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>book.classList.remove('open')));
+  setTimeout(()=>{book.classList.add('closed');$('hintOpen').style.opacity=1;},REDUCED?0:920);
+  setTimeout(()=>{isOpen=false;busy=false;book.setAttribute('role','button');book.setAttribute('aria-label',t('bookClosed'));setInert();try{history.replaceState(null,'',lang==='uk'?'#uk':' ');}catch(e){}book.focus({preventScroll:true});},REDUCED?0:1700);}
+book.addEventListener('keydown',e=>{if(!isOpen&&(e.key==='Enter'||e.key===' ')){e.preventDefault();open();}});
+$('close').onclick=close;
+
+// ---------- flipping
+function makeLeaf(dir,to){const l=document.createElement('div');l.className='leaf '+(dir>0?'fwd':'bwd');
+  l.append(face(cur,dir>0?'R':'L','front'),face(to,dir>0?'L':'R','back'));book.appendChild(l);
+  setSide(dir>0?sideR:sideL,to,dir>0?'R':'L');return l;}
+function setAngle(l,a,dir){l.style.transform=`translateZ(1px) rotateY(${a}deg)`;const p=Math.abs(a)/180,k=Math.sin(p*Math.PI);
+  l.querySelectorAll('.face>.shade').forEach(s=>s.style.opacity=(.2+.8*k).toFixed(2));
+  const under=(dir>0?sideR:sideL).querySelector('.face>.shade');if(under)under.style.opacity=(.9*(1-p)).toFixed(2);}
+function animateTo(l,from,to,dir,done){if(REDUCED){done();return;}const t0=performance.now(),D=Math.max(240,760*Math.abs(to-from)/180);
+  const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  (function step(t){const k=Math.min(1,(t-t0)/D);setAngle(l,from+(to-from)*ease(k),dir);if(k<1)requestAnimationFrame(step);else done();})(t0);}
+function flip(dir,target){if(!isOpen||busy)return;const to=target!=null?target:cur+dir;if(to<0||to>=SPREADS.length||to===cur)return;dir=to>cur?1:-1;busy=true;hideTip();
+  const l=makeLeaf(dir,to);setAngle(l,0,dir);animateTo(l,0,dir>0?-180:180,dir,()=>finish(l,to));}
+function finish(l,to){l.remove();cur=to;render(cur);busy=false;pressStamps();}
+$('prev').onclick=()=>flip(-1);$('next').onclick=()=>flip(1);
+addEventListener('keydown',e=>{if([...document.querySelectorAll('.modal')].some(m=>!m.hidden))return;if(e.key==='ArrowRight'){isOpen?flip(1):open();}else if(e.key==='ArrowLeft')flip(-1);else if(e.key==='Escape')close();});
+
+// pointer: open, page click, corner drag, stamps
+let cd=null;
+book.addEventListener('pointerdown',e=>{if(busy)return;if(!isOpen){cd={openClick:true,x:e.clientX};return;}
+  if(e.target.closest('.stamp'))return;const sideEl=e.target.closest('.side');if(!sideEl)return;const dir=sideEl===sideR?1:-1;
+  if(e.target.classList.contains('corner')){const to=cur+dir;if(to<0||to>=SPREADS.length)return;e.preventDefault();busy=true;hideTip();
+    cd={dir,to,x:e.clientX,l:makeLeaf(dir,to),a:-dir*10};book.setPointerCapture(e.pointerId);setAngle(cd.l,cd.a,dir);}
+  else cd={click:true,dir,x:e.clientX};});
+book.addEventListener('pointermove',e=>{if(!cd||!cd.l)return;const dx=(e.clientX-cd.x)/(scale*BS);const p=Math.max(0,Math.min(1,(cd.dir>0?-dx:dx)/(PW*1.6)));
+  cd.a=-cd.dir*Math.max(10,p*180);setAngle(cd.l,cd.a,cd.dir);});
+book.addEventListener('pointerup',e=>{if(!cd)return;const c=cd;cd=null;const still=Math.abs(e.clientX-c.x)<6;
+  if(c.click&&still&&stampMode){const q=toBook(toStage(e));rubberStamp(objs.querySelector('[data-id="obj-10"]'),q);setStampMode(false);return;}
+  if(c.openClick){if(still)open();return;}
+  if(c.click){if(still)flip(c.dir);return;}
+  if(Math.abs(c.a)/180>.3)animateTo(c.l,c.a,-c.dir*180,c.dir,()=>finish(c.l,c.to));
+  else animateTo(c.l,c.a,0,c.dir,()=>{c.l.remove();render(cur);busy=false;});});
+let tip=null;
+function hideTip(){if(tip){tip.remove();tip=null;}}
+function showTip(st){hideTip();const r=st.getBoundingClientRect(),s=stage.getBoundingClientRect();tip=document.createElement('div');tip.className='tip';tip.textContent=st.dataset.label;
+  tip.style.left=((r.left+r.width/2-s.left)/scale)+'px';tip.style.top=((r.top-s.top)/scale)+'px';stage.appendChild(tip);}
+book.addEventListener('click',e=>{const st=e.target.closest('.side>.stamp:not(.ink)');if(!st||!isOpen)return;if(st.dataset.link==='ask')openContact(L(I18N.askPlerdy));else if(st.dataset.link!=null)flip(0,+st.dataset.link);else showTip(st);});
+book.addEventListener('pointerover',e=>{const st=e.target.closest('.side>.stamp:not(.ink)');if(st&&isOpen&&!busy)showTip(st);});
+book.addEventListener('pointerout',e=>{if(e.target.closest('.stamp'))hideTip();});
+book.addEventListener('focusin',e=>{const st=e.target.closest('.side>.stamp');if(st)showTip(st);});book.addEventListener('focusout',hideTip);
+
+// ---------- desk objects
+const objs=$('objs');
+OBJS.forEach(([id,x,y,w,h,vid],k)=>{const o=document.createElement('div');o.className='obj';Object.assign(o.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',zIndex:k+1});o.dataset.id=id;o.dataset.hx=x;o.dataset.hy=y;o.dataset.hz=k+1;
+  o.innerHTML=vid==='yard'?`<div class="ytframe"><video src="img2/yard.mp4" poster="img2/yard-poster.jpg" muted loop playsinline ${motion?'autoplay':''}></video><i></i><i></i><i></i><i></i></div>`:vid?`<video src="img2/inspired.mp4" poster="img2/${id}.webp" muted loop playsinline ${motion?'autoplay':''}></video>`:`<img src="img2/${id}.webp" alt="">`;if(id==='obj-0'){const v=document.createElement('video');Object.assign(v,{src:'img2/fridge.mp4',poster:'img2/fridge-poster.jpg',muted:true,loop:true,autoplay:motion,playsInline:true});v.setAttribute('aria-hidden','true');v.setAttribute('muted','');v.setAttribute('playsinline','');v.className='phonevid';o.appendChild(v);}if(id==='obj-1'){const v=document.createElement('video');Object.assign(v,{src:'img2/player.mp4',poster:'img2/player-poster.jpg',muted:true,loop:true,autoplay:motion,playsInline:true});v.setAttribute('aria-hidden','true');v.setAttribute('muted','');v.setAttribute('playsinline','');v.className='phonevid2';o.appendChild(v);}objs.appendChild(o);});
+let topZ=20,od=null;
+const toStage=e=>{const r=stage.getBoundingClientRect();return{x:(e.clientX-r.left)/scale,y:(e.clientY-r.top)/scale};};
+objs.addEventListener('pointerdown',e=>{if(e.target.closest('a'))return;const o=e.target.closest('.obj');if(!o)return;e.preventDefault();o.setPointerCapture(e.pointerId);const p=toStage(e);
+  od={o,dx:p.x-parseFloat(o.style.left),dy:p.y-parseFloat(o.style.top),sx:e.clientX,sy:e.clientY};o.style.zIndex=++topZ;o.classList.remove('drop');o.classList.add('drag');});
+objs.addEventListener('pointermove',e=>{if(!od)return;const p=toStage(e);od.o.style.left=Math.max(-80,Math.min(1380,p.x-od.dx))+'px';od.o.style.top=Math.max(-80,Math.min(840,p.y-od.dy))+'px';});
+const objUp=e=>{if(!od)return;const o=od.o,moved=Math.hypot(e.clientX-od.sx,e.clientY-od.sy)>6;od=null;o.classList.remove('drag');
+  if(o.dataset.id==='obj-10'&&!moved&&isOpen&&!busy){goHome(o);setStampMode(!stampMode);return;}
+  if(o.dataset.id==='obj-10'&&!busy){const p=toStage(e);
+    const q=toBook(p);if(isOpen&&q.x>432&&q.x<1062&&q.y>158&&q.y<608){rubberStamp(o,q);return;}
+    if(!isOpen){const r=$('cover').querySelector('.front').getBoundingClientRect(),sr=stage.getBoundingClientRect();
+      const cx=(e.clientX-r.left)/r.width*PW,cy=(e.clientY-r.top)/r.height*450;if(cx>0&&cx<PW&&cy>0&&cy<450){rubberStamp(o,p,{x:cx,y:cy});return;}}}
+  void o.offsetWidth;o.classList.add('drop');};
+function goHome(o){if(o.style.left===o.dataset.hx+'px'&&o.style.top===o.dataset.hy+'px')return;o.classList.remove('drop','thump');o.classList.add('homing');
+  o.style.left=o.dataset.hx+'px';o.style.top=o.dataset.hy+'px';setTimeout(()=>{o.classList.remove('homing');o.style.zIndex=o.dataset.hz;},REDUCED?0:780);}
+function tidyDesk(){objs.querySelectorAll('.obj').forEach(goHome);}
+// boarding pass slides out from under the open passport, so the barcode (resume) stays reachable
+function passAside(){const o=objs.querySelector('[data-id="obj-7"]');if(!o)return;o.classList.remove('drop','thump');o.classList.add('homing');o.style.zIndex=++topZ;o.style.left='1075px';o.style.top='-26px';setTimeout(()=>o.classList.remove('homing'),REDUCED?0:780);}
+// rubber stamp: press it onto an open page to leave an ink imprint
+const INKS=[['st-permit-2',87,38],['st-permit-0',82,82],['st-fridge-1',77,77],['st-platefit-0',62,62]];let inkN=0;
+function rubberStamp(o,p,onCover){o.classList.add('thump');
+  setTimeout(()=>{const [id,w,h]=INKS[inkN++%INKS.length];const k=1.15,r=Math.round(Math.random()*28-14);let rec,el;
+    if(onCover){rec={id,side:'C',w:w*k,h:h*k,x:onCover.x-w*k/2,y:onCover.y-h*k/2,r};(imprints.cover=imprints.cover||[]).push(rec);el=inkEl(rec);$('cover').querySelector('.front').appendChild(el);}
+    else{const side=p.x<747?'L':'R';rec={id,side,w:w*k,h:h*k,x:(side==='L'?p.x-432:p.x-747)-w*k/2,y:p.y-158-h*k/2,r};
+      (imprints[cur]=imprints[cur]||[]).push(rec);el=inkEl(rec);(side==='L'?sideL:sideR).appendChild(el);}
+    el.classList.add('press');saveInk();},REDUCED?0:150);
+  setTimeout(()=>goHome(o),REDUCED?0:520);}
+function inkEl(r){const st=document.createElement('div');st.className='stamp ink';Object.assign(st.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px',rotate:r.r+'deg'});
+  st.innerHTML=`<img class="n" src="img2/${r.id}.webp" alt="${t('yourStamp')}"><img class="u" src="img2/${r.id}-uv.webp" alt="">`;return st;}
+objs.addEventListener('pointerup',objUp);objs.addEventListener('pointercancel',e=>{if(!od)return;const o=od.o;od=null;o.classList.remove('drag');});
+
+function setStampMode(v){stampMode=v;document.body.classList.toggle('stamping',v);const h=$('hintRubber');if(h)h.textContent=v?t('stampClick'):L(['↑ stamp it!','↑ постав штамп!']);}
+// ---------- UV
+function setUv(v){if(v===uv)return;uv=v;book.classList.toggle('uv',v);$('uvBtn').setAttribute('aria-pressed',v);$('mUv').setAttribute('aria-pressed',v);mobile(mi);}
+$('uvBtn').onclick=()=>{if(!isOpen){open();setTimeout(()=>setUv(true),REDUCED?0:1400);}else setUv(!uv);};
+const torch=$('torch'),beam=$('beam'),home={x:560,y:732};let td=false;
+torch.addEventListener('pointerdown',e=>{e.preventDefault();torch.setPointerCapture(e.pointerId);td=true;torch.classList.add('drag');tmove(e);});
+function tmove(e){if(!td)return;const p=toStage(e);torch.style.left=(p.x-318)+'px';torch.style.top=(p.y-62)+'px';beam.style.left=p.x+'px';beam.style.top=p.y+'px';beam.classList.add('on');
+  const q=toBook(p);setUv(isOpen&&q.x>402&&q.x<1092&&q.y>128&&q.y<640);}
+torch.addEventListener('pointermove',tmove);
+const tup=()=>{if(!td)return;td=false;torch.classList.remove('drag');beam.classList.remove('on');setUv(false);torch.style.left=home.x+'px';torch.style.top=home.y+'px';};
+torch.addEventListener('pointerup',tup);torch.addEventListener('pointercancel',tup);
+torch.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('uvBtn').click();}});
+
+// ---------- phone view
+let mi=0;
+function mobile(i){const s=SPREADS[i];const box=$('mSpread');box.innerHTML='';box.classList.toggle('uv',uv);
+  ['L','R'].forEach(sd=>{const pg=document.createElement('div');pg.className='m-page';pg.tabIndex=0;pg.setAttribute('role','button');pg.setAttribute('aria-label',(sd==='L'?t('left'):t('right'))+': '+s.title+'. '+t('tapZoom'));
+    pg.appendChild(face(i,sd));pg.onclick=e=>{if(e.target.closest('a'))return;showBig(`${lang==='en'?'en':'hi'}/spread-${s.key}${uv?'-uv':''}-${sd}.jpg`);};box.appendChild(pg);});
+  box.scrollLeft=0;fitM();
+  $('mTitle').textContent=(i+1)+' / '+SPREADS.length+' · '+s.title;$('mPrev').disabled=i===0;$('mNext').disabled=i===SPREADS.length-1;}
+function fitM(){document.querySelectorAll('.m-page').forEach(pg=>{const f=pg.querySelector('.face');if(f)f.style.transform=`scale(${pg.clientWidth/315||1})`;});}
+addEventListener('resize',fitM);
+$('mPrev').onclick=()=>{if(mi>0)mobile(--mi);};$('mNext').onclick=()=>{if(mi<SPREADS.length-1)mobile(++mi);};
+$('mUv').onclick=()=>{uv=!uv;book.classList.toggle('uv',uv);$('mUv').setAttribute('aria-pressed',uv);$('uvBtn').setAttribute('aria-pressed',uv);mobile(mi);};
+
+// ---------- boarding pass barcode → resume
+const bp=objs.querySelector('[data-id="obj-7"]');const scan=document.createElement('div');scan.className='scan';scan.tabIndex=0;scan.setAttribute('role','button');scan.setAttribute('aria-label','Штрихкод: відкрити резюме');bp.appendChild(scan);
+let pop=null;
+function showCv(){if(pop)return;pop=document.createElement('div');pop.className='cvpop';pop.innerHTML='<img src="img2/cv.webp" alt=""><p>Scanned · resume<span>Клікни штрихкод, щоб відкрити повністю</span></p>';
+  const x=parseFloat(bp.style.left),y=parseFloat(bp.style.top);pop.style.left=Math.max(10,Math.min(1440-262,x+40))+'px';pop.style.top=Math.max(10,Math.min(900-420,y+130))+'px';stage.appendChild(pop);}
+function hideCv(){if(pop){pop.remove();pop=null;}}
+scan.addEventListener('pointerenter',showCv);scan.addEventListener('pointerleave',hideCv);scan.addEventListener('focus',showCv);scan.addEventListener('blur',hideCv);
+scan.addEventListener('pointerdown',e=>e.stopPropagation());
+const cvModal=$('cvModal');
+function openModal(m,f){if(!m.hidden)return;m._last=document.activeElement;m.hidden=false;(f||m.querySelector('button,a[href]')).focus({preventScroll:true});}
+function closeModal(m){if(m.hidden)return;m.hidden=true;const l=m._last;if(l&&l.isConnected&&l.focus)l.focus({preventScroll:true});}
+addEventListener('keydown',e=>{if(e.key!=='Tab')return;const m=[...document.querySelectorAll('.modal')].find(x=>!x.hidden);if(!m)return;
+  const f=[...m.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])')].filter(x=>!x.hidden&&x.offsetParent!==null);if(!f.length)return;
+  const i=f.indexOf(document.activeElement);if(e.shiftKey&&(i<=0)){e.preventDefault();f[f.length-1].focus();}else if(!e.shiftKey&&(i===f.length-1||i<0)){e.preventDefault();f[0].focus();}},true);
+function openCv(){hideCv();openModal(cvModal,$('cvClose'));}
+function closeCv(){closeModal(cvModal);}
+scan.addEventListener('click',e=>{e.stopPropagation();openCv();});scan.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openCv();}});
+$('cvBtn').onclick=openCv;$('cvClose').onclick=closeCv;cvModal.addEventListener('click',e=>{if(e.target===cvModal)closeCv();});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!cvModal.hidden){e.stopImmediatePropagation();closeCv();}},true);
+
+// ---------- magnifier: hover any picture to look closer (uses 4× sources)
+const lens=$('lens'),lensZ=lens.querySelector('.z');let loupe=false,lx=0,ly=0,zoom=0;
+const HI=new Set(['obj-0','obj-1','obj-2','obj-3','obj-4','obj-7','obj-8','cover']);
+function hiSrc(u){const m=u.match(/(img2|en)\/(spread-[a-z]+(?:-uv)?-[LR])\.webp/);if(m)return(m[1]==='en'?'en/':'hi/')+m[2]+'.jpg';
+  const o=u.match(/img2\/(obj-\d+|cover)\.webp/);if(o&&HI.has(o[1]))return'hi/'+o[1]+'.jpg';return null;}
+const hiCache={};function hiImg(u){const h=hiSrc(u);if(!h)return u;const c=hiCache[h];if(c&&c.complete&&c.naturalWidth)return h;if(!c){const im=new Image();im.onload=()=>lensAt(lx,ly);im.src=h;hiCache[h]=im;}return u;}
+const vis=im=>im&&parseFloat(getComputedStyle(im).opacity)>.5;
+function pickImg(x,y){for(const el of document.elementsFromPoint(x,y)){
+  if(el===lens||el.closest('.deskloupe')||el.closest('.bar')||el.closest('.nav')||el.closest('.m-nav'))return null;
+  if(el.tagName==='IMG'&&!el.closest('.stage')){if(vis(el))return el;continue;}
+  const st=el.closest('.stamp');if(st){const im=[...st.querySelectorAll('img')].find(vis);if(im)return im;}
+  const o=el.closest('.obj');if(o)return o.querySelector('img')||{src:'img2/'+o.dataset.id+'.webp',getBoundingClientRect:()=>o.getBoundingClientRect()};
+  if(el.classList.contains('hit')||el.classList.contains('corner'))return[...el.parentElement.querySelectorAll('.face img.pg')].find(vis);
+  const cv=el.closest('.cover');if(cv)return cv.querySelector('.front img');
+  const t=el.closest('.torch');if(t)return t.querySelector('img');
+  if(el===stage)return stage.querySelector('.bg');}
+  return null;}
+function baseZoom(){return Math.max(3,Math.min(6,4/((window.devicePixelRatio||1)*(scale||1))));}
+function lensAt(x,y){lx=x;ly=y;if(!loupe)return;const im=pickImg(x,y);if(!im){lens.classList.remove('on');return;}
+  const z=zoom||baseZoom();const r=im.getBoundingClientRect(),L=lens.offsetWidth;lens.style.left=x+'px';lens.style.top=y+'px';
+  lens.style.backgroundImage=`url("${hiImg(im.currentSrc||im.src)}")`;lens.style.backgroundSize=`${r.width*z}px ${r.height*z}px`;
+  lens.style.backgroundPosition=`${-((x-r.left)*z-L/2)}px ${-((y-r.top)*z-L/2)}px`;lensZ.textContent='×'+z.toFixed(1)+t('wheel');lens.classList.add('on');}
+function preloadHi(){[...book.querySelectorAll('.side .face img.pg'),...objs.querySelectorAll('img'),$('cover').querySelector('.front img')].forEach(im=>hiImg(im.src));}
+function setLoupe(v){loupe=v;document.body.classList.toggle('loupe',v);$('lensBtn').setAttribute('aria-pressed',v);$('deskLoupe').setAttribute('aria-pressed',v);$('deskLoupe').setAttribute('aria-label',v?t('loupeOn'):t('loupeOff'));document.querySelector('.hint.zoom').textContent=v?t('zoomHintOn'):t('zoomHint');
+  if(v){preloadHi();lensAt(lx,ly);}else lens.classList.remove('on');}
+$('lensBtn').onclick=()=>setLoupe(!loupe);$('deskLoupe').addEventListener('click',e=>{e.stopPropagation();setLoupe(!loupe);});
+addEventListener('pointermove',e=>lensAt(e.clientX,e.clientY),{passive:true});
+addEventListener('pointerdown',e=>lensAt(e.clientX,e.clientY),{passive:true});
+document.addEventListener('mouseleave',()=>lens.classList.remove('on'));
+addEventListener('wheel',e=>{if(!loupe||!lens.classList.contains('on'))return;e.preventDefault();zoom=Math.max(1.5,Math.min(10,(zoom||baseZoom())*(e.deltaY<0?1.15:1/1.15)));lensAt(lx,ly);},{passive:false});
+addEventListener('keydown',e=>{if((e.key==='z'||e.key==='Z'||e.key==='я'||e.key==='Я')&&!e.metaKey&&!e.ctrlKey&&cvModal.hidden)setLoupe(!loupe);});
+// double-click any picture → open it full screen in high resolution
+const viewer=$('viewer');
+stage.addEventListener('dblclick',e=>{const im=pickImg(e.clientX,e.clientY);if(!im||im===stage.querySelector('.bg'))return;const h=hiSrc(im.currentSrc||im.src);if(!h)return;
+  e.preventDefault();lens.classList.remove('on');showBig(h);});
+function loadingUntil(imgs){viewer.classList.add('is-loading');$('viewerLoading').hidden=false;let n=imgs.length;const done=()=>{if(--n<=0){viewer.classList.remove('is-loading');$('viewerLoading').hidden=true;}};
+  imgs.forEach(im=>{if(im.complete&&im.naturalWidth)done();else{im.addEventListener('load',done,{once:true});im.addEventListener('error',done,{once:true});}});}
+function showBig(h){viewer.classList.remove('reading');const big=viewer.querySelector('img.big');big.hidden=false;$('vPair').hidden=true;$('vText').hidden=true;big.alt=t('zoomed');big.src=h;$('viewerTitle').textContent=t('zoomed');openModal(viewer,$('viewerClose'));loadingUntil([big]);}
+function readSpread(i){const s=SPREADS[i];viewer.querySelector('img.big').hidden=true;const pair=$('vPair');pair.hidden=false;pair.innerHTML='';
+  const hd=lang==='en'?'en':'hi';const imgs=[];
+  ['L','R'].forEach(sd=>{const w=document.createElement('div');w.className='pg-wrap';const im=document.createElement('img');im.className='pgimg';im.src=`${hd}/spread-${s.key}${uv?'-uv':''}-${sd}.jpg`;im.alt=(sd==='L'?t('left'):t('right'))+': '+s.title;w.appendChild(im);imgs.push(im);
+    s.stamps.forEach(([id,x,y,sw,sh])=>{if((x<PW)!==(sd==='L'))return;const st=document.createElement('img');st.className='st';st.alt='';st.src=`img2/${id}${uv?'-uv':''}.webp`;
+      Object.assign(st.style,{left:((sd==='L'?x:x-PW)/PW*100)+'%',top:(y/450*100)+'%',width:(sw/PW*100)+'%',height:(sh/450*100)+'%'});w.appendChild(st);});
+    pair.appendChild(w);});
+  vIdx=i;viewer.classList.add('reading');const tx=$('vText');tx.hidden=true;tx.innerHTML=`<p class="lbl">${t('textNote')}</p>`+TEXT[s.key][lang];setTxtBtn(false);$('vPrev').disabled=i===0;$('vNext').disabled=i===SPREADS.length-1;
+  $('viewerTitle').textContent=(i+1)+' / '+SPREADS.length+' · '+s.title;openModal(viewer,$('viewerClose'));viewer.scrollTop=0;loadingUntil(imgs);}
+$('readBtn').onclick=()=>readSpread(cur);
+let vIdx=0;function setTxtBtn(v){const b=$('vTxtBtn');b.setAttribute('aria-expanded',v);b.textContent=v?t('hideText'):t('showText');}
+$('vTxtBtn').onclick=()=>{const tx=$('vText');const v=tx.hidden;tx.hidden=!v;setTxtBtn(v);if(v)tx.scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'start'});};
+function viewerGo(d){const k=vIdx+d;if(k<0||k>=SPREADS.length)return;if(isOpen&&!busy){cur=k;render(cur);setCoverBack(cur);}const keep=document.activeElement,last=viewer._last;viewer.hidden=true;readSpread(k);viewer._last=last;if(keep&&keep.isConnected&&!keep.disabled)keep.focus({preventScroll:true});else $('viewerClose').focus({preventScroll:true});}
+$('vPrev').onclick=()=>viewerGo(-1);$('vNext').onclick=()=>viewerGo(1);
+addEventListener('keydown',e=>{if(viewer.hidden||!viewer.classList.contains('reading'))return;if(e.key==='ArrowRight'){e.preventDefault();viewerGo(1);}else if(e.key==='ArrowLeft'){e.preventDefault();viewerGo(-1);}});
+// contacts
+const cm=$('contactModal');function openContact(note){const n=$('contactNote');n.hidden=!note;n.textContent=note||'';openModal(cm,$('copyEmail'));}
+$('contactBtn').onclick=()=>openContact();$('contactClose').onclick=()=>closeModal(cm);
+cm.addEventListener('click',e=>{if(e.target===cm)closeModal(cm);});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!cm.hidden){e.stopImmediatePropagation();closeModal(cm);}},true);
+$('copyEmail').onclick=()=>{const em='kulibaba.marina1988@gmail.com',b=$('copyEmail');const done=()=>{b.textContent=t('copied');setTimeout(()=>b.textContent=t('copy'),1600);};
+  const sel=()=>{const r=document.createRange();r.selectNodeContents($('emailTxt'));const w=getSelection();w.removeAllRanges();w.addRange(r);b.textContent=t('selected');};
+  try{navigator.clipboard.writeText(em).then(done,sel);}catch(e){sel();}};
+$('viewerClose').onclick=()=>closeModal(viewer);viewer.addEventListener('click',e=>{if(e.target===viewer)closeModal(viewer);});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!viewer.hidden){e.stopImmediatePropagation();closeModal(viewer);}},true);
+addEventListener('keydown',e=>{if(e.key==='Escape'&&stampMode){e.stopImmediatePropagation();setStampMode(false);}},true);
+// motion (videos) — respects reduced motion, user can pause
+function applyMotion(){document.querySelectorAll('video').forEach(v=>{if(motion){const pr=v.play&&v.play();if(pr&&pr.catch)pr.catch(()=>{});}else v.pause();});
+  $('motionBtn').setAttribute('aria-pressed',String(!motion));$('motionBtn').textContent=motion?t('pauseMotion'):t('playMotion');}
+$('motionBtn').onclick=()=>{motion=!motion;applyMotion();};
+new MutationObserver(()=>{if(!motion)document.querySelectorAll('video').forEach(v=>{if(!v.paused)v.pause();});}).observe(document.body,{subtree:true,childList:true});
+// first-open tip
+function showTipBar(){let seen=false;try{seen=localStorage.getItem('passport-tip')==='1';}catch(e){}if(seen)return;$('tipTxt').innerHTML=t('tip');$('tipbar').hidden=false;fit();}
+$('tipClose').onclick=()=>{$('tipbar').hidden=true;try{localStorage.setItem('passport-tip','1');}catch(e){}};
+// skip link → text version of the current spread
+$('skipText').onclick=e=>{e.preventDefault();if(isOpen)readSpread(cur);else if(!busy){open();setTimeout(()=>readSpread(cur),REDUCED?0:1420);}};
+$('mRead').onclick=()=>readSpread(mi);
+(imprints.cover||[]).forEach(r=>$('cover').querySelector('.front').appendChild(inkEl(r)));
+$('langBtn').onclick=()=>setLang(lang==='en'?'uk':'en');
+if(deep>=0){cur=deep;mi=deep;}
+// The COAT: test-assignment tag with the full case link
+{const o=objs.querySelector('[data-id="obj-1"]');const a=document.createElement('a');a.className='playerlink';a.id='playerTag';a.href='https://memory-player-one.vercel.app';a.target='_blank';a.rel='noopener';a.innerHTML='<span></span>';o.appendChild(a);}
+{const o=objs.querySelector('[data-id="obj-12"]');const a=document.createElement('a');a.className='objtag';a.id='yardTag';a.href='https://yard-twin.vercel.app/';a.target='_blank';a.rel='noopener';o.appendChild(a);}
+{const o=objs.querySelector('[data-id="obj-6"]');const a=document.createElement('a');a.className='objtag';a.id='coatTag';a.href='https://fox-design-1.vercel.app/#proj-the-coat';a.target='_blank';a.rel='noopener';o.appendChild(a);}
+// 30-second summary for recruiters (facts only)
+const SUM={en:`<p class="role">In 30 seconds · for recruiters</p><h2 id="sumTitle">Marina Kulibaba — UI/UX · Product Designer</h2>
+<p class="lead">Kharkiv, Ukraine · remote · freelance since January 2024. I design web apps, SaaS, dashboards and mobile apps end-to-end, balancing user needs, business goals and UX.</p>
+<h3>Proof</h3><div class="proofs">
+<div class="proof"><span class="m">Client · fintech · 2024</span><b>Vovidal — crypto exchange</b><p><span class="big">270+</span> screens for desktop, tablet and mobile, light &amp; dark, plus a UI kit. The product launched.</p><div class="links"><button type="button" data-go="1">Open spread →</button><a href="https://fox-design-1.vercel.app/#proj-vovidal" target="_blank" rel="noopener">Case study ↗</a></div></div>
+<div class="proof"><span class="m">Client · fintech · 2025</span><b>Cvitku — crypto wallet &amp; trading</b><p><span class="big">+35%</span> new traders and investors after launch. iOS &amp; Android wallet app + web dashboard for analytics &amp; trading + brand.</p><div class="links"><button type="button" data-go="2">Open spread →</button></div></div>
+<div class="proof"><span class="m">Own product · AI · 2026</span><b>What’s in my Fridge?</b><p>Came up with, designed and launched it myself: AI suggests recipes from what you have at home.</p><div class="links"><a href="https://food-iota-silk.vercel.app/" target="_blank" rel="noopener">Live app ↗</a><button type="button" data-go="3">Open spread →</button></div></div>
+<div class="proof"><span class="m">Concept · health</span><b>PlateFit</b><p>Daily workouts + plate tracker: research → IA → UI with all the states.</p><div class="links"><button type="button" data-go="4">Open spread →</button></div></div>
+</div>
+<h3>How I work</h3><p class="flowline">research → IA &amp; user flows → UI (mobile + web) → design system &amp; handoff → AI prototyping (Claude · Cursor · Lovable · Figma Make)</p>
+<h3>Looking for</h3><p class="lead">A product-focused, Ukrainian-speaking team.</p>
+<div class="acts light"><button class="btn btn-primary" type="button" data-act="contact">Contacts</button><button class="btn btn-ghost" type="button" data-act="cv">Resume</button><button class="btn btn-ghost" type="button" data-go="0">Open passport</button><button class="btn btn-ghost" type="button" data-act="close">Close</button></div>`,
+uk:`<p class="role">За 30 секунд · для рекрутера</p><h2 id="sumTitle">Марина Кулібаба — UI/UX · Product Designer</h2>
+<p class="lead">Харків, Україна · віддалено · фриланс з січня 2024. Проєктую веб-застосунки, SaaS, дашборди й мобільні застосунки від дослідження до передачі в розробку, поєднуючи потреби людей, цілі бізнесу та UX.</p>
+<h3>Докази</h3><div class="proofs">
+<div class="proof"><span class="m">Клієнт · fintech · 2024</span><b>Vovidal — криптобіржа</b><p><span class="big">270+</span> екранів для desktop, планшета й mobile, світла й темна тема, плюс UI kit. Продукт запущено.</p><div class="links"><button type="button" data-go="1">Відкрити розворот →</button><a href="https://fox-design-1.vercel.app/#proj-vovidal" target="_blank" rel="noopener">Кейс ↗</a></div></div>
+<div class="proof"><span class="m">Клієнт · fintech · 2025</span><b>Cvitku — криптогаманець і трейдинг</b><p><span class="big">+35%</span> нових трейдерів та інвесторів після запуску. Гаманець для iOS і Android + веб-дашборд для аналітики й трейдингу + бренд.</p><div class="links"><button type="button" data-go="2">Відкрити розворот →</button></div></div>
+<div class="proof"><span class="m">Власний продукт · AI · 2026</span><b>What’s in my Fridge?</b><p>Сама придумала, спроєктувала й запустила: AI підбирає рецепти з того, що є вдома.</p><div class="links"><a href="https://food-iota-silk.vercel.app/" target="_blank" rel="noopener">Живий застосунок ↗</a><button type="button" data-go="3">Відкрити розворот →</button></div></div>
+<div class="proof"><span class="m">Концепт · здоров’я</span><b>PlateFit</b><p>Тренування на день + трекер тарілки: дослідження → IA → UI з усіма станами.</p><div class="links"><button type="button" data-go="4">Відкрити розворот →</button></div></div>
+</div>
+<h3>Як я працюю</h3><p class="flowline">дослідження → IA і user flows → UI (mobile + web) → дизайн-система й передача в розробку → AI-прототипування (Claude · Cursor · Lovable · Figma Make)</p>
+<h3>Шукаю</h3><p class="lead">Продуктову україномовну команду.</p>
+<div class="acts light"><button class="btn btn-primary" type="button" data-act="contact">Контакти</button><button class="btn btn-ghost" type="button" data-act="cv">Резюме</button><button class="btn btn-ghost" type="button" data-go="0">Відкрити паспорт</button><button class="btn btn-ghost" type="button" data-act="close">Закрити</button></div>`};
+const sm=$('sumModal');function langExtras(){$('sumBody').innerHTML=SUM[lang==='en'?'en':'uk'];$('coatTag').textContent=t('coatTag');$('yardTag').textContent=t('yardTag');$('yardTag').setAttribute('aria-label',t('yardAria'));$('playerTag').firstChild.textContent=t('playerTag');$('playerTag').setAttribute('aria-label',t('playerAria'));$('coatTag').setAttribute('aria-label',t('coatAria'));}
+function openSummary(){openModal(sm,sm.querySelector('[data-act="contact"]'));}
+$('sumBtn').onclick=openSummary;$('sticky').onclick=openSummary;
+sm.addEventListener('click',e=>{if(e.target===sm){closeModal(sm);return;}const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.act==='close')closeModal(sm);else if(b.dataset.act==='contact'){closeModal(sm);openContact();}else if(b.dataset.act==='cv'){closeModal(sm);openCv();}
+  else if(b.dataset.go!=null){const k=+b.dataset.go;closeModal(sm);if(innerWidth<=760||matchMedia('(max-width:1100px) and (orientation:portrait)').matches){mi=k;mobile(mi);return;}
+    if(!isOpen){cur=k;open();}else if(k!==cur)flip(0,k);}});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!sm.hidden){e.stopImmediatePropagation();closeModal(sm);}},true);
+applyLang();render(cur);setCoverBack(cur);sideL.style.visibility='hidden';mobile(mi);setInert();applyMotion();
+if(deep>=0&&!matchMedia('(max-width:760px),(max-width:1100px) and (orientation:portrait)').matches)setTimeout(open,500);
+</script>
