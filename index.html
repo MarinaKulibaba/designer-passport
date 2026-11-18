@@ -1,4 +1,5 @@
 <title>Marina's Designer Passport</title>
+<script>if(/vercel\.app$/.test(location.hostname)&&location.pathname.replace(/\/+$/,'')!==''&&!/\.\w+$/.test(location.pathname))document.write('<base href="/">');</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -858,7 +859,7 @@ const VISIT_FORM='https://formspree.io/f/xvkarbyq';// e.g. 'https://formspree.io
   setInterval(()=>{if(isOpen){add('opened passport');seen.add(SPREADS[cur].key);}},1000);
   document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(a&&/^https?:|^mailto:|\.pdf$/.test(a.getAttribute('href')))add('clicked '+a.getAttribute('href').replace(/^https?:\/\//,'').slice(0,60));if(e.target.closest('#copyEmail'))add('copied email');},true);
   const send=()=>{if(sent)return;sent=true;try{sessionStorage.setItem('passport-sent','1');}catch(e){}
-    const fd=new FormData();const who=q.get('for')||'—';
+    const fd=new FormData();const seg=decodeURIComponent(location.pathname.split('/').filter(Boolean)[0]||'').replace(/[^\w\-. ]/g,'').slice(0,60);const who=q.get('for')||seg||'—';
     fd.append('_subject','Passport opened'+(who!=='—'?' · '+who:'')+' · '+dev);
     fd.append('for',who);fd.append('when',new Date().toLocaleString('uk-UA',{timeZone:'Europe/Kiev'})+' (Kyiv)');
     fd.append('visitor timezone',Intl.DateTimeFormat().resolvedOptions().timeZone||'');fd.append('language',navigator.language||'');
