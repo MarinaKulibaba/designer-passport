@@ -844,7 +844,7 @@ sm.addEventListener('click',e=>{if(e.target===sm){closeModal(sm);return;}const b
     if(!isOpen){cur=k;open();}else if(k!==cur)flip(0,k);}});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!sm.hidden){e.stopImmediatePropagation();closeModal(sm);}},true);
 // ---------- visit notes → email (Formspree). Anonymous: no IP lookup, no cookies.
-const VISIT_FORM='';// e.g. 'https://formspree.io/f/xxxxxxx'
+const VISIT_FORM='https://formspree.io/f/xvkarbyq';// e.g. 'https://formspree.io/f/xxxxxxx'
 (()=>{const q=new URLSearchParams(location.search);try{if(q.get('me')==='1')localStorage.setItem('passport-me','1');if(q.get('me')==='0')localStorage.removeItem('passport-me');}catch(e){}
   let me=false;try{me=localStorage.getItem('passport-me')==='1';}catch(e){}
   if(!VISIT_FORM||me||!/vercel\.app$/.test(location.hostname))return;
