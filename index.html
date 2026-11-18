@@ -303,12 +303,53 @@ button.stamp{background:none;border:0;padding:0;font:inherit}
 body.stamping .stage{cursor:crosshair}
 @media (max-width:760px){.pair{flex-direction:column}.pair .pg-wrap{width:100%}.txt{padding:var(--s4)}}
 
+
+.bar.top{order:-1}
+.bar .group.tools .btn{min-height:32px;padding:0 var(--s3);font-size:12px}
+.btn .ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.btn-accent{background:var(--uv);color:var(--uv-ink);font-weight:600;box-shadow:0 0 0 0 rgba(201,184,255,.6);animation:accentPulse 2.6s ease-out 1.2s 3}
+.btn-accent:hover{background:#d8cbff}
+@keyframes accentPulse{0%{box-shadow:0 0 0 0 rgba(201,184,255,.55)}70%{box-shadow:0 0 0 12px rgba(201,184,255,0)}100%{box-shadow:0 0 0 0 rgba(201,184,255,0)}}
+.foot{margin:0;font:500 11px/1.4 var(--f-mono);letter-spacing:1px;text-transform:uppercase;color:var(--soft)}
+.foot kbd{font:inherit;border:1px solid var(--edge);border-radius:4px;padding:1px 5px;color:var(--paper)}
+@media (max-width:1199px){.foot{display:none}}
+.startcard{position:absolute;left:36px;top:24px;z-index:15;display:flex;align-items:flex-start;gap:8px;transition:opacity .3s,transform .3s}
+body.opened .startcard{opacity:0;pointer-events:none;transform:translateY(-12px)}
+.startcard .sticky{position:relative;left:auto;top:auto}
+.sticky .t{display:flex;align-items:center;gap:5px;margin-top:8px;font:500 9.5px/1.2 var(--f-mono);letter-spacing:.6px;text-transform:uppercase;color:var(--ink-soft)}
+.sticky .t i{font-style:normal}.sticky .t .ic{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.topproj{width:184px;margin-top:6px;transform:rotate(1.5deg);background:var(--stamp-paper);border-radius:3px;padding:12px 12px 10px;box-shadow:0 3px 6px rgba(26,20,13,.16),0 14px 24px rgba(26,20,13,.1);display:flex;flex-direction:column;gap:2px}
+.topproj .k{margin:0 0 4px;font:500 9px/1 var(--f-mono);letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-soft)}
+.topproj button{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:1px;padding:5px 6px;border-radius:4px;color:var(--ink)}
+.topproj button b{font:700 13px/1.2 var(--f-sans)}.topproj button span{font:500 10.5px/1.3 var(--f-sans);color:var(--ink-soft)}
+.topproj button:hover{background:rgba(27,68,180,.07)}.topproj button:focus-visible{outline:2px solid var(--stamp-blue);outline-offset:1px}
+.topproj .all{flex-direction:row;align-items:center;gap:6px;margin-top:4px;padding:7px 8px;border-top:1px dashed var(--line);border-radius:0 0 4px 4px;color:var(--stamp-blue)}
+.topproj .all span{font:700 12px/1 var(--f-sans);color:var(--stamp-blue);flex:1}
+.topproj .all .ic{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.summary .about{margin:0;padding:12px 14px;border-left:3px solid var(--uv);background:rgba(201,184,255,.14);border-radius:0 8px 8px 0;font:500 14.5px/1.5 var(--f-sans)}
+.summary .acts{justify-content:space-between;align-items:center;margin-top:4px}
+@media (max-width:760px){.bar.top{gap:var(--s2)}.bar #uvBtn,.bar #lensBtn,.bar #motionBtn{display:none}.bar .group.tools{position:absolute;right:16px;top:14px}.bar .group.main{width:100%;flex-wrap:nowrap}.bar .group.main .btn{flex:1 1 auto;padding:0 10px;font-size:12px;gap:5px;min-width:0}.bar.top{position:relative}}
+.summary .acts .r{display:flex;gap:var(--s2);flex-wrap:wrap;justify-content:flex-end}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <a class="btn btn-primary skip" href="#" id="skipText">Skip to text version</a>
 <main class="wrap" id="main">
   <h1 class="sr-only" id="h1">Marina Kulibaba — UI/UX · Product Designer</h1>
+  <nav class="bar top" aria-label="Main">
+    <div class="who"><b>Marina Kulibaba</b><span id="whoRole">UI/UX · Product Designer · Kharkiv</span></div>
+    <div class="group tools">
+      <button class="btn btn-ghost" id="uvBtn" aria-pressed="false">UV mode</button>
+      <button class="btn btn-ghost lensbtn" id="lensBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6" stroke-linecap="round"/></svg><span>Loupe</span></button>
+      <button class="btn btn-ghost" id="motionBtn" aria-pressed="false">Pause motion</button>
+      <button class="btn btn-ghost" id="langBtn">УКР</button>
+    </div>
+    <div class="group main">
+      <button class="btn btn-accent" id="sumBtn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg><span>30-sec summary</span></button>
+      <button class="btn btn-ghost" id="cvBtn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><span>Resume</span></button>
+      <button class="btn btn-primary" id="contactBtn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg><span>Contacts</span></button>
+    </div>
+  </nav>
   <div class="viewport" id="vp">
     <div class="stage" id="stage" aria-label="Робочий стіл дизайнера з паспортом">
       <img class="bg" src="img2/desk-bg.jpg" alt="">
@@ -323,7 +364,15 @@ body.stamping .stage{cursor:crosshair}
         </div>
       </div>
       <span class="hint open" id="hintOpen">click the passport to open</span>
-      <button class="sticky" id="sticky" type="button"><span class="k">Recruiter?</span><span class="h">Start here →</span><span class="s">30-second summary</span></button>
+      <div class="startcard" id="startcard">
+        <button class="sticky" id="sticky" type="button"><span class="k">Recruiter?</span><span class="h">Start here →</span><span class="s">30-second summary</span><span class="t"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg><i id="stickyTime">who I am · proof · contacts</i></span></button>
+        <div class="topproj" role="group" aria-labelledby="tpTitle"><p class="k" id="tpTitle">Top projects</p>
+          <button type="button" data-go="1"><b>Vovidal</b><span id="tp1">crypto exchange · 270+ screens</span></button>
+          <button type="button" data-go="2"><b>Cvitku</b><span id="tp2">crypto wallet · +35% traders</span></button>
+          <button type="button" data-go="3"><b>What’s in my Fridge?</b><span id="tp3">own AI app · live</span></button>
+          <button type="button" class="all" data-go="1" id="tpAll"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h11"/><circle cx="11.5" cy="9.5" r="2.5"/></svg><span>See all 4 projects</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
       <span class="hint light">← grab to see more</span>
       <span class="hint rubber" id="hintRubber">↑ stamp it!</span>
       <button class="deskloupe" id="deskLoupe" aria-label="Лупа: увімкнути збільшення" aria-pressed="false"><svg viewBox="0 0 200 200" aria-hidden="true">
@@ -357,19 +406,7 @@ body.stamping .stage{cursor:crosshair}
     <div class="m-nav"><button class="btn btn-ghost" id="mPrev">← Назад</button><button class="btn btn-ghost" id="mUv" aria-pressed="false">UV</button><button class="btn btn-primary" id="mRead">Read</button><button class="btn btn-ghost" id="mNext">Далі →</button></div>
   </div>
 
-  <nav class="bar" aria-label="Tools">
-    <div class="who"><b>Marina Kulibaba</b><span id="whoRole">UI/UX · Product Designer · Kharkiv</span></div>
-    <span id="kbdHint"></span>
-    <div class="group">
-      <button class="btn btn-ghost" id="uvBtn" aria-pressed="false">UV mode</button>
-      <button class="btn btn-ghost lensbtn" id="lensBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6" stroke-linecap="round"/></svg><span>Loupe</span></button>
-      <button class="btn btn-ghost" id="motionBtn" aria-pressed="false">Pause motion</button>
-      <button class="btn btn-ghost" id="langBtn">УКР</button>
-      <button class="btn btn-ghost" id="sumBtn">In 30 sec</button>
-      <button class="btn btn-ghost" id="cvBtn">Resume</button>
-      <button class="btn btn-primary" id="contactBtn">Contacts</button>
-    </div>
-  </nav>
+  <p class="foot" id="kbdHint"></p>
   <section class="sr-only" id="textVersion" aria-labelledby="tvTitle"><h2 id="tvTitle">Text version</h2><div id="tvBody"></div></section>
 </main>
 
@@ -450,7 +487,7 @@ const I18N={
  playerTag:['▶ Open the player ↗','▶ Відкрити плеєр ↗'],playerAria:['Memory Player — gift player app, opens in a new tab','Memory Player — застосунок-подарунок, відкривається в новій вкладці'],yardTag:['Yard Twin · 3D dashboard ↗','Yard Twin · 3D-дашборд ↗'],yardAria:['Yard Twin — 3D warehouse operations dashboard, live prototype (opens in a new tab)','Yard Twin — 3D-дашборд складських операцій, живий прототип (нова вкладка)'],coatTag:['The COAT · test assignment ↗','The COAT · тестове завдання ↗'],coatAria:['The COAT fashion marketplace — test assignment, full case in the portfolio (opens in a new tab)','The COAT, fashion marketplace — тестове завдання, повний кейс у портфоліо (нова вкладка)']};
 const t=k=>L(I18N[k]);
 const UI=[['#readBtn',['Read case','Читати кейс']],['#mRead',['Read','Читати']],['#skipText',['Skip to text version','Перейти до текстової версії']],['#tvTitle',['Text version','Текстова версія']],['#whoRole',['UI/UX · Product Designer · Kharkiv','UI/UX · Product Designer · Харків']],['#lensBtn span',['Loupe','Лупа']],['#viewerLoading',['Loading…','Завантаження…']],['#cvTitle',['Boarding pass · resume','Boarding pass · резюме']],['#cvPdf',['Open PDF','Відкрити PDF']],['#tipClose',['Got it','Зрозуміло']],['#hintOpen',['click the passport to open','натисни на паспорт, щоб відкрити']],['.hint.light',['← grab to see more','← візьми, щоб побачити більше']],['#hintRubber',['↑ stamp it!','↑ постав штамп!']],
- ['#close',['Close passport','Закрити паспорт']],['#uvBtn',['UV mode','UV-режим']],['#cvBtn',['Resume','Резюме']],['#sumBtn',['In 30 sec','За 30 секунд']],['#sticky .k',['Recruiter?','Рекрутер?']],['#sticky .h',['Start here →','Почніть тут →']],['#sticky .s',['30-second summary','Коротко за 30 секунд']],['#contactBtn',['Contacts','Контакти']],
+ ['#close',['Close passport','Закрити паспорт']],['#uvBtn',['UV mode','UV-режим']],['#cvBtn span',['Resume','Резюме']],['#sumBtn span',['30-sec summary','Коротко за 30 сек']],['#sticky .k',['Recruiter?','Рекрутер?']],['#sticky .h',['Start here →','Почніть тут →']],['#sticky .s',['30-second summary','Коротко за 30 секунд']],['#stickyTime',['who I am · proof · contacts','хто я · докази · контакти']],['#tpTitle',['Top projects','Топ-проєкти']],['#tp1',['crypto exchange · 270+ screens','криптобіржа · 270+ екранів']],['#tp2',['crypto wallet · +35% traders','криптогаманець · +35% трейдерів']],['#tp3',['own AI app · live','власний AI-застосунок · live']],['#tpAll span',['See all 4 projects','Усі 4 проєкти']],['#contactBtn span',['Contacts','Контакти']],
  ['#mPrev',['← Back','← Назад']],['#mNext',['Next →','Далі →']],['#mSwipe',['swipe ← → between pages · tap a page to zoom','свайп ← → між сторінками · тапни сторінку, щоб збільшити']],
  ['#viewerClose',['Close','Закрити']],['#cvClose',['Close','Закрити']],['#contactClose',['Close','Закрити']],['#copyEmail',['Copy email','Скопіювати email']],
  ['#contactModal .role',['Boarding pass · contacts','Boarding pass · контакти']],['#rowPortfolio',['Portfolio','Портфоліо']],['#kbdHint',null]];
@@ -459,7 +496,7 @@ const ATTR=[['#stage','aria-label',['Designer’s desk with the passport','Ро�
  ['#torch','aria-label',['UV flashlight: drag it over the passport to reveal hidden notes (Enter toggles UV mode)','UV-ліхтарик: перетягни на паспорт, щоб побачити приховані нотатки (Enter вмикає UV-режим)']],
  ['.scan','aria-label',['Barcode: open the resume','Штрихкод: відкрити резюме']],['#viewer','aria-label',['Zoomed view','Збільшений перегляд']],['#contactModal','aria-label',['Contacts','Контакти']],['#cvModal','aria-label',['Resume of Marina Kulibaba','Резюме Marina Kulibaba']],
  ['#cvImg','alt',['Resume of Marina Kulibaba, UI/UX Designer: profile, experience since 2024 (Vovidal, Cvitku, The COAT, What’s in my Fridge?), education, skills, contacts','Резюме Marina Kulibaba, UI/UX Designer: профіль, досвід з 2024 року (Vovidal, Cvitku, The COAT, What’s in my Fridge?), освіта, навички, контакти']],
- ['.bar','aria-label',['Tools','Інструменти']]];
+ ['.bar','aria-label',['Main menu','Головне меню']]];
 function applyLang(){document.documentElement.lang=lang==='en'?'en':'uk';if(typeof langExtras==='function'&&$('coatTag'))langExtras();
  ATTR.forEach(([sel,a,v])=>document.querySelectorAll(sel).forEach(el=>el.setAttribute(a,L(v))));
  book.setAttribute('aria-label',isOpen?t('bookOpen'):t('bookClosed'));
@@ -753,7 +790,8 @@ if(deep>=0){cur=deep;mi=deep;}
 {const o=objs.querySelector('[data-id="obj-6"]');const a=document.createElement('a');a.className='objtag';a.id='coatTag';a.href='https://fox-design-1.vercel.app/#proj-the-coat';a.target='_blank';a.rel='noopener';o.appendChild(a);}
 // 30-second summary for recruiters (facts only)
 const SUM={en:`<p class="role">In 30 seconds · for recruiters</p><h2 id="sumTitle">Marina Kulibaba — UI/UX · Product Designer</h2>
-<p class="lead">Kharkiv, Ukraine · remote · freelance since January 2024. I design web apps, SaaS, dashboards and mobile apps end-to-end, balancing user needs, business goals and UX.</p>
+<p class="about">Hi, I’m Marina. I came to design through courses (GoIT, then Alesia Boiko) and have been freelancing since 2024. I learn by building: next to client work I design and ship small products with AI tools — a recipe finder, a gift player, a 3D warehouse dashboard. My favourite task is taking a complex, data-heavy product like crypto and making it calm and clear.</p>
+<p class="lead">Kharkiv, Ukraine · remote. I design web apps, SaaS, dashboards and mobile apps end-to-end, balancing user needs, business goals and UX.</p>
 <h3>Proof</h3><div class="proofs">
 <div class="proof"><span class="m">Client · fintech · 2024</span><b>Vovidal — crypto exchange</b><p><span class="big">270+</span> screens for desktop, tablet and mobile, light &amp; dark, plus a UI kit. The product launched.</p><div class="links"><button type="button" data-go="1">Open spread →</button><a href="https://fox-design-1.vercel.app/#proj-vovidal" target="_blank" rel="noopener">Case study ↗</a></div></div>
 <div class="proof"><span class="m">Client · fintech · 2025</span><b>Cvitku — crypto wallet &amp; trading</b><p><span class="big">+35%</span> new traders and investors after launch. iOS &amp; Android wallet app + web dashboard for analytics &amp; trading + brand.</p><div class="links"><button type="button" data-go="2">Open spread →</button></div></div>
@@ -762,9 +800,10 @@ const SUM={en:`<p class="role">In 30 seconds · for recruiters</p><h2 id="sumTit
 </div>
 <h3>How I work</h3><p class="flowline">research → IA &amp; user flows → UI (mobile + web) → design system &amp; handoff → AI prototyping (Claude · Cursor · Lovable · Figma Make)</p>
 <h3>Looking for</h3><p class="lead">A product-focused, Ukrainian-speaking team.</p>
-<div class="acts light"><button class="btn btn-primary" type="button" data-act="contact">Contacts</button><button class="btn btn-ghost" type="button" data-act="cv">Resume</button><button class="btn btn-ghost" type="button" data-go="0">Open passport</button><button class="btn btn-ghost" type="button" data-act="close">Close</button></div>`,
+<div class="acts light"><button class="btn btn-ghost" type="button" data-act="close"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Close</button><div class="r"><button class="btn btn-ghost" type="button" data-go="0"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h11"/><circle cx="11.5" cy="9.5" r="2.5"/></svg>Open passport</button><button class="btn btn-ghost" type="button" data-act="cv"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>Resume</button><button class="btn btn-primary" type="button" data-act="contact"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>Contacts</button></div></div>`,
 uk:`<p class="role">За 30 секунд · для рекрутера</p><h2 id="sumTitle">Марина Кулібаба — UI/UX · Product Designer</h2>
-<p class="lead">Харків, Україна · віддалено · фриланс з січня 2024. Проєктую веб-застосунки, SaaS, дашборди й мобільні застосунки від дослідження до передачі в розробку, поєднуючи потреби людей, цілі бізнесу та UX.</p>
+<p class="about">Привіт, я Марина. Прийшла в дизайн через курси (GoIT, потім Алеся Бойко) і з 2024 працюю на фрилансі. Я вчуся, коли будую: поряд із клієнтськими проєктами проєктую й запускаю невеликі продукти з AI — пошук рецептів, плеєр-подарунок, 3D-дашборд складу. Найбільше люблю брати складний, перевантажений даними продукт, як-от крипто, і робити його спокійним і зрозумілим.</p>
+<p class="lead">Харків, Україна · віддалено. Проєктую веб-застосунки, SaaS, дашборди й мобільні застосунки від дослідження до передачі в розробку, поєднуючи потреби людей, цілі бізнесу та UX.</p>
 <h3>Докази</h3><div class="proofs">
 <div class="proof"><span class="m">Клієнт · fintech · 2024</span><b>Vovidal — криптобіржа</b><p><span class="big">270+</span> екранів для desktop, планшета й mobile, світла й темна тема, плюс UI kit. Продукт запущено.</p><div class="links"><button type="button" data-go="1">Відкрити розворот →</button><a href="https://fox-design-1.vercel.app/#proj-vovidal" target="_blank" rel="noopener">Кейс ↗</a></div></div>
 <div class="proof"><span class="m">Клієнт · fintech · 2025</span><b>Cvitku — криптогаманець і трейдинг</b><p><span class="big">+35%</span> нових трейдерів та інвесторів після запуску. Гаманець для iOS і Android + веб-дашборд для аналітики й трейдингу + бренд.</p><div class="links"><button type="button" data-go="2">Відкрити розворот →</button></div></div>
@@ -773,10 +812,11 @@ uk:`<p class="role">За 30 секунд · для рекрутера</p><h2 id=
 </div>
 <h3>Як я працюю</h3><p class="flowline">дослідження → IA і user flows → UI (mobile + web) → дизайн-система й передача в розробку → AI-прототипування (Claude · Cursor · Lovable · Figma Make)</p>
 <h3>Шукаю</h3><p class="lead">Продуктову україномовну команду.</p>
-<div class="acts light"><button class="btn btn-primary" type="button" data-act="contact">Контакти</button><button class="btn btn-ghost" type="button" data-act="cv">Резюме</button><button class="btn btn-ghost" type="button" data-go="0">Відкрити паспорт</button><button class="btn btn-ghost" type="button" data-act="close">Закрити</button></div>`};
+<div class="acts light"><button class="btn btn-ghost" type="button" data-act="close"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Закрити</button><div class="r"><button class="btn btn-ghost" type="button" data-go="0"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h11"/><circle cx="11.5" cy="9.5" r="2.5"/></svg>Відкрити паспорт</button><button class="btn btn-ghost" type="button" data-act="cv"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>Резюме</button><button class="btn btn-primary" type="button" data-act="contact"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>Контакти</button></div></div>`};
 const sm=$('sumModal');function langExtras(){$('sumBody').innerHTML=SUM[lang==='en'?'en':'uk'];$('coatTag').textContent=t('coatTag');$('yardTag').textContent=t('yardTag');$('yardTag').setAttribute('aria-label',t('yardAria'));$('playerTag').firstChild.textContent=t('playerTag');$('playerTag').setAttribute('aria-label',t('playerAria'));$('coatTag').setAttribute('aria-label',t('coatAria'));}
 function openSummary(){openModal(sm,sm.querySelector('[data-act="contact"]'));}
 $('sumBtn').onclick=openSummary;$('sticky').onclick=openSummary;
+$('startcard').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const k=+b.dataset.go;if(innerWidth<=760||matchMedia('(max-width:1100px) and (orientation:portrait)').matches){mi=k;mobile(mi);$('mobile').scrollIntoView({behavior:'smooth'});return;}if(!isOpen){cur=k;open();}else if(k!==cur)flip(0,k);});
 sm.addEventListener('click',e=>{if(e.target===sm){closeModal(sm);return;}const b=e.target.closest('button');if(!b)return;
   if(b.dataset.act==='close')closeModal(sm);else if(b.dataset.act==='contact'){closeModal(sm);openContact();}else if(b.dataset.act==='cv'){closeModal(sm);openCv();}
   else if(b.dataset.go!=null){const k=+b.dataset.go;closeModal(sm);if(innerWidth<=760||matchMedia('(max-width:1100px) and (orientation:portrait)').matches){mi=k;mobile(mi);return;}
