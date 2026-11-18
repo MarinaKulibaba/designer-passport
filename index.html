@@ -843,6 +843,32 @@ sm.addEventListener('click',e=>{if(e.target===sm){closeModal(sm);return;}const b
   else if(b.dataset.go!=null){const k=+b.dataset.go;closeModal(sm);if(innerWidth<=760||matchMedia('(max-width:1100px) and (orientation:portrait)').matches){mi=k;mobile(mi);return;}
     if(!isOpen){cur=k;open();}else if(k!==cur)flip(0,k);}});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!sm.hidden){e.stopImmediatePropagation();closeModal(sm);}},true);
+// ---------- visit notes → email (Formspree). Anonymous: no IP lookup, no cookies.
+const VISIT_FORM='';// e.g. 'https://formspree.io/f/xxxxxxx'
+(()=>{const q=new URLSearchParams(location.search);try{if(q.get('me')==='1')localStorage.setItem('passport-me','1');if(q.get('me')==='0')localStorage.removeItem('passport-me');}catch(e){}
+  let me=false;try{me=localStorage.getItem('passport-me')==='1';}catch(e){}
+  if(!VISIT_FORM||me||!/vercel\.app$/.test(location.hostname))return;
+  let sent=false;try{sent=sessionStorage.getItem('passport-sent')==='1';}catch(e){}if(sent)return;
+  const t0=Date.now(),acts=new Set(),seen=new Set();const add=a=>acts.add(a);
+  const ua=navigator.userAgent,dev=/Mobi|Android|iPhone/.test(ua)?'phone':/iPad|Tablet/.test(ua)?'tablet':'desktop';
+  const os=/Mac OS X/.test(ua)&&!/iPhone|iPad/.test(ua)?'macOS':/Windows/.test(ua)?'Windows':/Android/.test(ua)?'Android':/iPhone|iPad/.test(ua)?'iOS':/Linux/.test(ua)?'Linux':'other';
+  const br=/Edg\//.test(ua)?'Edge':/Chrome\//.test(ua)?'Chrome':/Firefox\//.test(ua)?'Firefox':/Safari\//.test(ua)?'Safari':'other';
+  const watch={sumModal:'30-sec summary',cvModal:'resume',contactModal:'contacts',viewer:'zoom / read as text'};
+  Object.entries(watch).forEach(([id,label])=>{const m=$(id);if(m)new MutationObserver(()=>{if(!m.hidden)add('opened '+label);}).observe(m,{attributes:true,attributeFilter:['hidden']});});
+  setInterval(()=>{if(isOpen){add('opened passport');seen.add(SPREADS[cur].key);}},1000);
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(a&&/^https?:|^mailto:|\.pdf$/.test(a.getAttribute('href')))add('clicked '+a.getAttribute('href').replace(/^https?:\/\//,'').slice(0,60));if(e.target.closest('#copyEmail'))add('copied email');},true);
+  const send=()=>{if(sent)return;sent=true;try{sessionStorage.setItem('passport-sent','1');}catch(e){}
+    const fd=new FormData();const who=q.get('for')||'—';
+    fd.append('_subject','Passport opened'+(who!=='—'?' · '+who:'')+' · '+dev);
+    fd.append('for',who);fd.append('when',new Date().toLocaleString('uk-UA',{timeZone:'Europe/Kiev'})+' (Kyiv)');
+    fd.append('visitor timezone',Intl.DateTimeFormat().resolvedOptions().timeZone||'');fd.append('language',navigator.language||'');
+    fd.append('device',dev+' · '+os+' · '+br+' · '+screen.width+'×'+screen.height);fd.append('came from',document.referrer||'direct / unknown');
+    fd.append('site language',lang);fd.append('time on site',Math.round((Date.now()-t0)/1000)+' s');
+    fd.append('did',[...acts].join('; ')||'only looked at the desk');fd.append('spreads seen',[...seen].join(', ')||'—');
+    try{if(!navigator.sendBeacon(VISIT_FORM,fd))fetch(VISIT_FORM,{method:'POST',body:fd,keepalive:true,headers:{Accept:'application/json'}});}catch(e){}};
+  addEventListener('pagehide',send);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&Date.now()-t0>4000)send();});
+  setTimeout(send,90000);})();
 applyLang();render(cur);setCoverBack(cur);sideL.style.visibility='hidden';mobile(mi);setInert();applyMotion();
 if(deep>=0&&!matchMedia('(max-width:760px),(max-width:1100px) and (orientation:portrait)').matches)setTimeout(open,500);
 </script>
+<script>if(/vercel\.app$/.test(location.hostname)){window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};const v=document.createElement("script");v.defer=true;v.src="/_vercel/insights/script.js";document.head.appendChild(v);}</script>
